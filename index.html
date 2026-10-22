@@ -1,0 +1,3398 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Pianificatore bioenergetico settimanale & Lista spesa Lidl Francia</title>
+    <style>
+        :root {
+            --bg-main: #f1f5f9;
+            --bg-card: #ffffff;
+            --text-main: #0f172a;
+            --text-sec: #475569;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --primary: #1d4ed8;
+            --primary-dark: #1e40af;
+            --primary-light: #eff6ff;
+            --lidl-blue: #0050aa;
+            --lidl-yellow: #fff000;
+            --lidl-red: #e60a14;
+            --carb: #0284c7;
+            --carb-bg: #e0f2fe;
+            --prot: #059669;
+            --prot-bg: #d1fae5;
+            --fat: #d97706;
+            --fat-bg: #fef3c7;
+            --cheat-color: #7c3aed;
+            --cheat-bg: #f3e8ff;
+            --radius: 14px;
+            --shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            line-height: 1.5;
+            padding: 16px 12px calc(104px + env(safe-area-inset-bottom, 0px));
+        }
+
+        .container {
+            max-width: 1220px;
+            margin: 0 auto;
+        }
+
+        header {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 18px 20px;
+            margin-bottom: 18px;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+        }
+
+        header h1 {
+            font-size: 1.35rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+        }
+
+        header p {
+            font-size: 0.85rem;
+            color: var(--text-sec);
+        }
+
+        .header-badges {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 5px 10px;
+            border-radius: 999px;
+            background: var(--primary-light);
+            color: var(--primary);
+            border: 1px solid #bfdbfe;
+        }
+
+        .badge.green {
+            background: var(--prot-bg);
+            color: #065f46;
+            border-color: #a7f3d0;
+        }
+
+        .badge.lidl {
+            background: var(--lidl-blue);
+            color: var(--lidl-yellow);
+            border: 1px solid #003d82;
+        }
+
+        .app-grid {
+            display: grid;
+            grid-template-columns: 380px 1fr;
+            gap: 20px;
+            align-items: start;
+        }
+
+        @media (max-width: 960px) {
+            .app-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 18px;
+            margin-bottom: 16px;
+            box-shadow: var(--shadow);
+        }
+
+        .card-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            margin-bottom: 14px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .control-block {
+            margin-bottom: 14px;
+        }
+
+        .control-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+
+        .control-label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-sec);
+        }
+
+        .control-val {
+            font-size: 0.95rem;
+            font-weight: 800;
+            color: var(--primary);
+            font-variant-numeric: tabular-nums;
+        }
+
+        .stepper-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-step {
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            background: #f8fafc;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text-main);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            user-select: none;
+        }
+
+        .btn-step:active {
+            background: #e2e8f0;
+        }
+
+        input[type="range"] {
+            flex: 1;
+            height: 6px;
+            accent-color: var(--primary);
+            cursor: pointer;
+        }
+
+        select {
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 10px;
+            border: 1px solid #cbd5e1;
+            background-color: #ffffff;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .seg-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+            gap: 8px;
+        }
+
+        .seg-btn {
+            padding: 9px 8px;
+            border: 1px solid #cbd5e1;
+            background: #ffffff;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-sec);
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.15s ease;
+        }
+
+        .seg-btn.active {
+            background: var(--primary-light);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .surplus-box {
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 12px;
+            margin-top: 10px;
+        }
+
+        .preset-chips {
+            display: flex;
+            gap: 6px;
+            margin-top: 8px;
+            flex-wrap: wrap;
+        }
+
+        .chip {
+            flex: 1;
+            min-width: 75px;
+            padding: 6px 8px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: #ffffff;
+            color: var(--text-sec);
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .chip.active {
+            background: var(--primary);
+            color: #ffffff;
+            border-color: var(--primary);
+        }
+
+        .kpi-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        @media (max-width: 600px) {
+            .kpi-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .kpi-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 14px 16px;
+            box-shadow: var(--shadow);
+        }
+
+        .kpi-box.target {
+            border-color: var(--primary);
+            background: linear-gradient(135deg, #ffffff 0%, #eff6ff 100%);
+        }
+
+        .kpi-label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--text-muted);
+        }
+
+        .kpi-value {
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin-top: 2px;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .kpi-sub {
+            font-size: 0.78rem;
+            color: var(--text-sec);
+            margin-top: 2px;
+        }
+
+        .macro-bar {
+            height: 12px;
+            border-radius: 999px;
+            background: #e2e8f0;
+            overflow: hidden;
+            display: flex;
+            margin-bottom: 14px;
+        }
+
+        .macro-cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .m-card {
+            padding: 12px;
+            border-radius: 12px;
+        }
+
+        .m-card.c { background: var(--carb-bg); color: #0369a1; }
+        .m-card.p { background: var(--prot-bg); color: #047857; }
+        .m-card.l { background: var(--fat-bg); color: #b45309; }
+
+        .m-card-head {
+            font-size: 0.78rem;
+            font-weight: 700;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .m-card-val {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: var(--text-main);
+            margin: 2px 0;
+        }
+
+        .m-card-sub {
+            font-size: 0.78rem;
+            color: var(--text-sec);
+        }
+
+        /* Navigazione settimanale */
+        .week-nav {
+            display: flex;
+            gap: 6px;
+            overflow-x: auto;
+            padding-bottom: 6px;
+            margin-bottom: 14px;
+            scrollbar-width: thin;
+        }
+
+        .day-tab {
+            padding: 9px 13px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            background: #ffffff;
+            font-size: 0.83rem;
+            font-weight: 700;
+            color: var(--text-sec);
+            cursor: pointer;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .day-tab.active {
+            background: var(--primary);
+            color: #ffffff;
+            border-color: var(--primary);
+        }
+
+        .day-tab.cheat-tab {
+            background: var(--cheat-bg);
+            color: var(--cheat-color);
+            border-color: #d8b4fe;
+        }
+
+        .day-tab.cheat-tab.active {
+            background: var(--cheat-color);
+            color: #ffffff;
+        }
+
+        .day-section-header {
+            background: #1e293b;
+            color: #ffffff;
+            padding: 12px 16px;
+            border-radius: 12px;
+            margin: 18px 0 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 700;
+        }
+
+        .meal-box {
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            margin-bottom: 14px;
+            background: #ffffff;
+            overflow: hidden;
+        }
+
+        .meal-box-head {
+            background: #f8fafc;
+            padding: 12px 14px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .meal-title {
+            font-weight: 800;
+            font-size: 0.98rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .pill-tag {
+            font-size: 0.78rem;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 999px;
+            background: #e2e8f0;
+            color: var(--text-sec);
+        }
+
+        .pill-tag.fixed-morning {
+            background: #dcfce7;
+            color: #166534;
+            border: 1px solid #86efac;
+        }
+
+        .meal-selector-bar {
+            padding: 10px 14px;
+            background: #ffffff;
+            border-bottom: 1px solid #f1f5f9;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .meal-selector-bar select {
+            flex: 1;
+            min-width: 0;
+        }
+
+        /* Pulsante ⓘ e Nota a scomparsa della Ricetta */
+        .recipe-info-btn {
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            border: 1px solid #bfdbfe;
+            background: var(--primary-light);
+            color: var(--primary);
+            font-size: 1.05rem;
+            font-weight: 800;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: all 0.15s ease;
+            line-height: 1;
+            user-select: none;
+        }
+
+        .recipe-info-btn:hover {
+            background: #dbeafe;
+            border-color: var(--primary);
+        }
+
+        .recipe-info-btn[aria-expanded="true"] {
+            background: var(--primary);
+            color: #ffffff;
+            border-color: var(--primary-dark);
+        }
+
+        .recipe-note {
+            display: none;
+            background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+            border-bottom: 1px solid var(--border);
+            padding: 13px 15px;
+            font-size: 0.85rem;
+            color: var(--text-main);
+        }
+
+        .recipe-note.open {
+            display: block;
+        }
+
+        .recipe-note-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 10px;
+            margin-bottom: 9px;
+        }
+
+        .recipe-note-title {
+            font-weight: 800;
+            color: var(--primary-dark);
+            font-size: 0.88rem;
+            line-height: 1.35;
+        }
+
+        .recipe-close-btn {
+            border: 1px solid #cbd5e1;
+            background: #ffffff;
+            color: var(--text-sec);
+            border-radius: 7px;
+            padding: 3px 8px;
+            font-size: 0.76rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            flex-shrink: 0;
+        }
+
+        .recipe-close-btn:hover {
+            background: #e2e8f0;
+            color: var(--text-main);
+        }
+
+        .recipe-ingredients-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 9px;
+        }
+
+        .recipe-ing-pill {
+            font-size: 0.76rem;
+            font-weight: 700;
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            color: var(--text-main);
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .recipe-aroma-pill {
+            font-size: 0.75rem;
+            font-weight: 600;
+            background: #fef9c3;
+            border: 1px solid #fde047;
+            color: #854d0e;
+            padding: 3px 8px;
+            border-radius: 6px;
+        }
+
+        .recipe-steps-text {
+            color: var(--text-sec);
+            font-size: 0.84rem;
+            line-height: 1.55;
+            background: #ffffff;
+            border: 1px solid var(--border);
+            border-radius: 9px;
+            padding: 10px 12px;
+        }
+
+        .food-list {
+            padding: 6px 14px 10px;
+        }
+
+        .food-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 9px 0;
+            border-bottom: 1px solid #f1f5f9;
+            gap: 10px;
+        }
+
+        .food-row:last-child {
+            border-bottom: none;
+        }
+
+        .food-info-name {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .food-info-fr {
+            font-size: 0.76rem;
+            color: var(--lidl-blue);
+            font-weight: 600;
+            margin-top: 1px;
+        }
+
+        .food-info-macros {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .gram-badge {
+            background: var(--primary-light);
+            color: var(--primary);
+            font-weight: 800;
+            font-size: 0.92rem;
+            padding: 5px 10px;
+            border-radius: 8px;
+            white-space: nowrap;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .gram-badge.locked {
+            background: #dcfce7;
+            color: #15803d;
+            border: 1px solid #86efac;
+        }
+
+        .meal-footer {
+            background: #f8fafc;
+            padding: 9px 14px;
+            border-top: 1px solid var(--border);
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: var(--text-sec);
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .cheat-card {
+            background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%);
+            border: 1px solid #d8b4fe;
+            border-radius: 14px;
+            padding: 24px 20px;
+            text-align: center;
+            color: #581c87;
+        }
+
+        .cheat-card h3 {
+            font-size: 1.2rem;
+            margin-bottom: 8px;
+        }
+
+        .cheat-card p {
+            font-size: 0.9rem;
+            color: #6b21a8;
+            max-width: 540px;
+            margin: 0 auto;
+        }
+
+        .day-verification {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            border-radius: 12px;
+            padding: 12px 16px;
+            font-size: 0.85rem;
+            color: #166534;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .day-verification.warn {
+            background: #fffbeb;
+            border-color: #fcd34d;
+            color: #92400e;
+        }
+
+        /* Stili Lista della Spesa Lidl France */
+        .lidl-card {
+            border: 2px solid var(--lidl-blue);
+            background: #ffffff;
+        }
+
+        .lidl-banner {
+            background: linear-gradient(135deg, #0050aa 0%, #003a7a 100%);
+            color: #ffffff;
+            padding: 14px 16px;
+            border-radius: 10px;
+            margin-bottom: 14px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .lidl-banner-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 800;
+            font-size: 1.02rem;
+        }
+
+        .lidl-logo-pill {
+            background: var(--lidl-yellow);
+            color: var(--lidl-blue);
+            border: 2px solid var(--lidl-red);
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-weight: 900;
+            font-size: 0.82rem;
+            letter-spacing: 0.03em;
+        }
+
+        .shopping-stats {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            font-size: 0.8rem;
+            background: rgba(255, 255, 255, 0.14);
+            padding: 6px 12px;
+            border-radius: 8px;
+        }
+
+        .shopping-toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 14px;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .aisle-group {
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            margin-bottom: 14px;
+            overflow: hidden;
+        }
+
+        .aisle-header {
+            background: #f8fafc;
+            padding: 10px 14px;
+            border-bottom: 1px solid var(--border);
+            font-weight: 800;
+            font-size: 0.9rem;
+            color: var(--lidl-blue);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .shop-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 11px 14px;
+            border-bottom: 1px solid #f1f5f9;
+            gap: 12px;
+            cursor: pointer;
+            transition: background-color 0.12s ease;
+        }
+
+        .shop-item:last-child {
+            border-bottom: none;
+        }
+
+        .shop-item:hover {
+            background: #f8fafc;
+        }
+
+        .shop-item.checked {
+            background: #f8fafc;
+            opacity: 0.55;
+        }
+
+        .shop-item.checked .shop-name-fr,
+        .shop-item.checked .shop-name-it {
+            text-decoration: line-through;
+        }
+
+        .shop-left {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            flex: 1;
+        }
+
+        .shop-checkbox {
+            width: 20px;
+            height: 20px;
+            margin-top: 2px;
+            accent-color: var(--lidl-blue);
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .shop-name-fr {
+            font-size: 0.92rem;
+            font-weight: 800;
+            color: var(--text-main);
+        }
+
+        .shop-name-it {
+            font-size: 0.78rem;
+            color: var(--text-sec);
+            margin-top: 1px;
+        }
+
+        .shop-meta {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            margin-top: 3px;
+        }
+
+        .freezer-badge {
+            display: inline-block;
+            margin-top: 4px;
+            font-size: 0.74rem;
+            font-weight: 700;
+            background: #e0f2fe;
+            color: #0369a1;
+            border: 1px solid #bae6fd;
+            padding: 2px 7px;
+            border-radius: 6px;
+        }
+
+        .shop-right {
+            text-align: right;
+            flex-shrink: 0;
+        }
+
+        .shop-total-weight {
+            font-size: 0.95rem;
+            font-weight: 800;
+            color: var(--lidl-blue);
+            font-variant-numeric: tabular-nums;
+        }
+
+        .shop-packs {
+            display: inline-block;
+            margin-top: 3px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            background: #fef9c3;
+            color: #854d0e;
+            border: 1px solid #fde047;
+            padding: 2px 7px;
+            border-radius: 6px;
+        }
+
+        /* Barra inferiore fissa per smartphone e desktop */
+        .bottom-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.96);
+            backdrop-filter: blur(8px);
+            border-top: 1px solid var(--border);
+            padding: 10px 12px calc(10px + env(safe-area-inset-bottom, 0px));
+            z-index: 100;
+            box-shadow: 0 -4px 12px rgba(15, 23, 42, 0.06);
+        }
+
+        .bottom-bar-inner {
+            max-width: 1220px;
+            margin: 0 auto;
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-action {
+            flex: 1;
+            padding: 11px 10px;
+            border-radius: 10px;
+            border: none;
+            font-size: 0.82rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            white-space: nowrap;
+        }
+
+        .btn-action.primary {
+            background: var(--primary);
+            color: #ffffff;
+        }
+
+        .btn-action.lidl-btn {
+            background: var(--lidl-blue);
+            color: var(--lidl-yellow);
+            border: 1px solid #003a7a;
+        }
+
+        .btn-action.secondary {
+            background: #f1f5f9;
+            color: var(--text-main);
+            border: 1px solid #cbd5e1;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: calc(76px + env(safe-area-inset-bottom, 0px));
+            left: 50%;
+            transform: translateX(-50%);
+            background: #0f172a;
+            color: #ffffff;
+            padding: 10px 18px;
+            border-radius: 999px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s ease;
+            z-index: 200;
+            text-align: center;
+        }
+
+        .toast.show {
+            opacity: 1;
+        }
+
+        .source-note {
+            max-width: 1220px;
+            margin: 8px auto 0;
+            padding: 0 12px;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        /* Pagina pubblicata: aree sicure del telefono e schema chiaro */
+        :root { color-scheme: light; padding-top: env(safe-area-inset-top, 0px); }
+        html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+
+        /* Mobile: la griglia non deve allargarsi oltre lo schermo; la barra azioni entra in 4 colonne */
+        .app-grid > * { min-width: 0; }
+        @media (max-width: 960px) { .app-grid { grid-template-columns: minmax(0, 1fr); } }
+        @media (max-width: 600px) {
+            .bottom-bar-inner { gap: 6px; }
+            .btn-action { min-width: 0; padding: 8px 4px; font-size: 0.74rem; line-height: 1.2; white-space: normal; text-align: center; }
+        }
+        :focus-visible { outline: 3px solid var(--primary); outline-offset: 2px; }
+        @media (prefers-reduced-motion: reduce) {
+            html { scroll-behavior: auto; }
+            *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <div>
+            <h1>Pianificatore bioenergetico settimanale (6+1) & Spesa Lidl FR</h1>
+            <p>Equazione di Mifflin-St Jeor • Skyr 0% mattina fisso a 200 g • Ricettario interattivo ⓘ & Gestione Freezer Lidl FR</p>
+        </div>
+        <div class="header-badges">
+            <span class="badge green">Skyr mattina bloccato: 200 g</span>
+            <span class="badge lidl">Ricette interattive ⓘ • Etichette Lidl FR</span>
+        </div>
+    </header>
+
+    <div class="app-grid">
+        <!-- Pannello di configurazione antropometrica e metabolica -->
+        <aside>
+            <div class="card">
+                <div class="card-title">
+                    <span>Parametri antropometrici</span>
+                    <span id="bmiTag" class="pill-tag">BMI: 23,7</span>
+                </div>
+
+                <div class="control-block">
+                    <div class="control-header">
+                        <span class="control-label">Sesso biologico</span>
+                    </div>
+                    <div class="seg-group">
+                        <button type="button" class="seg-btn active" data-sex="M">Uomo</button>
+                        <button type="button" class="seg-btn" data-sex="F">Donna</button>
+                    </div>
+                </div>
+
+                <!-- Peso -->
+                <div class="control-block">
+                    <div class="control-header">
+                        <span class="control-label">Peso corporeo</span>
+                        <span class="control-val"><span id="weightLbl">75,0</span> kg</span>
+                    </div>
+                    <div class="stepper-row">
+                        <button type="button" class="btn-step" data-target="weight" data-step="-0.5">−</button>
+                        <input type="range" id="weight" min="40" max="150" step="0.5" value="75.0">
+                        <button type="button" class="btn-step" data-target="weight" data-step="0.5">+</button>
+                    </div>
+                </div>
+
+                <!-- Altezza -->
+                <div class="control-block">
+                    <div class="control-header">
+                        <span class="control-label">Altezza</span>
+                        <span class="control-val"><span id="heightLbl">178</span> cm</span>
+                    </div>
+                    <div class="stepper-row">
+                        <button type="button" class="btn-step" data-target="height" data-step="-1">−</button>
+                        <input type="range" id="height" min="140" max="215" step="1" value="178">
+                        <button type="button" class="btn-step" data-target="height" data-step="1">+</button>
+                    </div>
+                </div>
+
+                <!-- Età -->
+                <div class="control-block">
+                    <div class="control-header">
+                        <span class="control-label">Età anagrafica</span>
+                        <span class="control-val"><span id="ageLbl">23</span> anni</span>
+                    </div>
+                    <div class="stepper-row">
+                        <button type="button" class="btn-step" data-target="age" data-step="-1">−</button>
+                        <input type="range" id="age" min="16" max="85" step="1" value="23">
+                        <button type="button" class="btn-step" data-target="age" data-step="1">+</button>
+                    </div>
+                </div>
+
+                <!-- LAF -->
+                <div class="control-block">
+                    <div class="control-header">
+                        <span class="control-label">Livello di attività fisica (LAF)</span>
+                    </div>
+                    <select id="activity">
+                        <option value="1.2">Sedentario (LAF 1,20)</option>
+                        <option value="1.375">Leggermente attivo (LAF 1,375 • 1-3 all.)</option>
+                        <option value="1.55" selected>Moderatamente attivo (LAF 1,55 • 3-5 all.)</option>
+                        <option value="1.725">Molto attivo (LAF 1,725 • 6-7 all.)</option>
+                        <option value="1.9">Estremamente attivo (LAF 1,90 • bigiornaliero)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">
+                    <span>Obiettivo e calibrazione calorica</span>
+                </div>
+
+                <div class="control-block">
+                    <div class="seg-group">
+                        <button type="button" class="seg-btn" data-goal="deficit">Deficit</button>
+                        <button type="button" class="seg-btn" data-goal="maintenance">Mantenimento</button>
+                        <button type="button" class="seg-btn active" data-goal="surplus">Surplus</button>
+                    </div>
+
+                    <!-- Box dinamico con slider per Surplus o Deficit -->
+                    <div id="deltaBox" class="surplus-box">
+                        <div class="control-header">
+                            <span class="control-label" id="deltaTitle">Entità del surplus calorico</span>
+                            <span class="control-val" id="deltaValLbl">+300 kcal</span>
+                        </div>
+                        <div class="stepper-row">
+                            <button type="button" class="btn-step" id="deltaMinus">−</button>
+                            <input type="range" id="deltaSlider" min="50" max="1000" step="25" value="300">
+                            <button type="button" class="btn-step" id="deltaPlus">+</button>
+                        </div>
+                        <div class="preset-chips" id="presetChips"></div>
+                    </div>
+                </div>
+
+                <div class="control-block">
+                    <div class="control-header">
+                        <span class="control-label">Profilo ripartizione macronutrienti</span>
+                    </div>
+                    <select id="macroProfile">
+                        <option value="sport_balanced" selected>Sportivo bilanciato (P 2,0 g/kg • L 26% • C resto)</option>
+                        <option value="high_carb">Alto in carboidrati / Performance (P 1,8 g/kg • L 22% • C resto)</option>
+                        <option value="recomp">Ricomposizione corporea (P 2,2 g/kg • L 27% • C resto)</option>
+                        <option value="zone">Ripartizione percentuale fissa (50% C • 25% P • 25% L)</option>
+                    </select>
+                </div>
+
+                <div class="control-block">
+                    <div class="control-header">
+                        <span class="control-label">Base colazione costante (Skyr 200 g fisso)</span>
+                    </div>
+                    <select id="breakfastTemplateSelect">
+                        <option value="0" selected>Skyr 0% Milbona (200 g) + Fiocchi d'avena + Burro d'arachidi + Mirtilli</option>
+                        <option value="1">Skyr 0% Milbona (200 g) + Fette biscottate int. + Mandorle + Mirtilli</option>
+                    </select>
+                </div>
+
+                <div class="control-block">
+                    <div class="control-header">
+                        <span class="control-label">Strategia rotazione e gestione freezer</span>
+                    </div>
+                    <select id="rotationMode">
+                        <option value="variety" selected>Massima varietà (più fonti proteiche • avanzi in freezer)</option>
+                        <option value="compact">Spesa compatta (usa intere vaschette fresche su 2 pasti)</option>
+                    </select>
+                </div>
+
+                <div class="control-block">
+                    <div class="control-header">
+                        <span class="control-label">Giorno di sgarro / Pasto libero (escluso)</span>
+                    </div>
+                    <select id="cheatDaySelect">
+                        <option value="0">Lunedì</option>
+                        <option value="1">Martedì</option>
+                        <option value="2">Mercoledì</option>
+                        <option value="3">Giovedì</option>
+                        <option value="4">Venerdì</option>
+                        <option value="5">Sabato</option>
+                        <option value="6" selected>Domenica (Predefinito)</option>
+                    </select>
+                </div>
+
+                <div class="control-block" style="margin-bottom:0;">
+                    <div class="control-header">
+                        <span class="control-label">Frazionamento giornaliero</span>
+                    </div>
+                    <select id="snackToggle">
+                        <option value="4" selected>4 pasti (Colazione, Spuntino, Pranzo, Cena)</option>
+                        <option value="3">3 pasti principali (Colazione, Pranzo, Cena)</option>
+                    </select>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Colonna principale: risultati, calendario settimanale e lista della spesa Lidl France -->
+        <main>
+            <div class="kpi-row">
+                <div class="kpi-box">
+                    <div class="kpi-label">Metabolismo basale (BMR)</div>
+                    <div class="kpi-value"><span id="bmrOut">0</span> kcal</div>
+                    <div class="kpi-sub">Equazione Mifflin-St Jeor</div>
+                </div>
+                <div class="kpi-box">
+                    <div class="kpi-label">Dispendio totale (TDEE)</div>
+                    <div class="kpi-value"><span id="tdeeOut">0</span> kcal</div>
+                    <div class="kpi-sub" id="tdeeSub">Mantenimento omeostatico</div>
+                </div>
+                <div class="kpi-box target">
+                    <div class="kpi-label">Target giornaliero (6 giorni)</div>
+                    <div class="kpi-value"><span id="targetOut">0</span> kcal</div>
+                    <div class="kpi-sub" id="targetSub">Surplus +300 kcal</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">
+                    <span>Target stechiometrico giornaliero dei macronutrienti</span>
+                </div>
+                <div class="macro-bar">
+                    <div id="barC" style="background:var(--carb); width:50%;"></div>
+                    <div id="barP" style="background:var(--prot); width:25%;"></div>
+                    <div id="barL" style="background:var(--fat); width:25%;"></div>
+                </div>
+                <div class="macro-cards">
+                    <div class="m-card c">
+                        <div class="m-card-head"><span>Carboidrati</span><span id="pctC">50%</span></div>
+                        <div class="m-card-val"><span id="gC">0</span> g</div>
+                        <div class="m-card-sub"><span id="kcalC">0</span> kcal • <span id="kgC">0</span> g/kg</div>
+                    </div>
+                    <div class="m-card p">
+                        <div class="m-card-head"><span>Proteine</span><span id="pctP">25%</span></div>
+                        <div class="m-card-val"><span id="gP">0</span> g</div>
+                        <div class="m-card-sub"><span id="kcalP">0</span> kcal • <span id="kgP">0</span> g/kg</div>
+                    </div>
+                    <div class="m-card l">
+                        <div class="m-card-head"><span>Lipidi</span><span id="pctL">25%</span></div>
+                        <div class="m-card-val"><span id="gL">0</span> g</div>
+                        <div class="m-card-sub"><span id="kcalL">0</span> kcal • <span id="kgL">0</span> g/kg</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Calendario settimanale dei pasti -->
+            <div class="card">
+                <div class="card-title">
+                    <span>Piano alimentare settimanale (6 giorni + 1 sgarro)</span>
+                    <button type="button" id="viewAllBtn" class="seg-btn" style="padding:5px 10px; font-size:0.78rem;">
+                        Mostra tutti i 6 giorni
+                    </button>
+                </div>
+
+                <div class="week-nav" id="weekNav"></div>
+                <div id="scheduleContainer"></div>
+            </div>
+
+            <!-- Sezione Lista della Spesa Settimanale Lidl France -->
+            <div class="card lidl-card" id="lidlShoppingSection">
+                <div class="lidl-banner">
+                    <div class="lidl-banner-title">
+                        <span class="lidl-logo-pill">LIDL FR</span>
+                        <span>Lista della spesa unica settimanale (6 giorni attivi)</span>
+                    </div>
+                    <div class="shopping-stats">
+                        <span>Articoli: <strong id="shopTotalItems">0</strong></span>
+                        <span>Peso totale: <strong id="shopTotalKg">0,0</strong> kg</span>
+                        <span>Nel carrello: <strong id="shopCheckedCount">0/0</strong></span>
+                    </div>
+                </div>
+
+                <div class="shopping-toolbar">
+                    <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                        <button type="button" class="seg-btn active" id="copyLidlListBtn" style="border-color:var(--lidl-blue); color:var(--lidl-blue);">
+                            📋 Copia lista Lidl (FR) per Note / WhatsApp
+                        </button>
+                        <button type="button" class="seg-btn" id="downloadLidlTxtBtn">
+                            ⬇ Scarica .TXT
+                        </button>
+                    </div>
+                    <button type="button" class="seg-btn" id="resetChecklistBtn" style="font-size:0.78rem; padding:6px 10px;">
+                        Azzera spunte
+                    </button>
+                </div>
+
+                <div id="shoppingListContainer"></div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<!-- Barra fissa inferiore ottimizzata per l'uso con il pollice -->
+<div class="bottom-bar">
+    <div class="bottom-bar-inner">
+        <button type="button" class="btn-action primary" id="regenWeekBtn">↻ Rigenera pasti</button>
+        <button type="button" class="btn-action lidl-btn" id="scrollToLidlBtn">🛒 Spesa Lidl FR</button>
+        <button type="button" class="btn-action secondary" id="copyWeekBtn">📋 Copia dieta</button>
+        <button type="button" class="btn-action secondary" id="shareLinkBtn">🔗 Link</button>
+    </div>
+</div>
+
+<p class="source-note">Valori nutrizionali indicativi per 100 g, ricavati da etichette dei marchi Lidl Francia (Milbona, Crownfield, Combino, Golden Sun, Maître Jean Pierre, Sondey, Maribel, Saint Alby, Vemondo, Nixe, Alesto), da Open Food Facts / MyFitnessPal e, per ortofrutta, tuberi e carni fresche, dalle tabelle CREA (2019). Le ricette dei prodotti cambiano: controlla sempre l’etichetta di quello che acquisti. Strumento informativo, non sostituisce il parere di un medico o di un dietista; per i minorenni e per deficit calorici prolungati chiedi a un professionista.</p>
+
+<div id="toast" class="toast" role="status" aria-live="polite">Operazione completata</div>
+
+<script>
+const DAYS_IT = ["Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato", "Domenica"];
+
+/**
+ * Ordine dei reparti (Rayons) così come strutturati nei punti vendita Lidl in Francia.
+ */
+const LIDL_AISLES_ORDER = [
+    "Fruits & Légumes (Marché Lidl)",
+    "Boulangerie & Pains",
+    "Boucherie & Volaille (L'Étal)",
+    "Poissonnerie & Surgelés (Ocean Sea)",
+    "Rayon Frais & Laitiers (Milbona)",
+    "Charcuterie & Traiteur (Saint Alby)",
+    "Épicerie Salée & Féculents (Golden Sun / Combino)",
+    "Épicerie Sucrée & Petit-déjeuner (Crownfield / Maribel)",
+    "Fruits Secs & Oléagineux (Alesto)"
+];
+
+/**
+ * Database bromatologico completo (valori per 100 g).
+ * I prodotti confezionati utilizzano le tabelle nutrizionali ufficiali Lidl France (Open Food Facts / MyFitnessPal).
+ * Frutta, verdura e carni fresche utilizzano le Tabelle di composizione degli alimenti CREA.
+ */
+const FOOD_DB = {
+    // Alimenti colazione (Etichette Lidl France)
+    skyr_0: {
+        name: "Skyr 0% / Yogurt greco 0%",
+        frName: "Skyr nature 0% MG (Milbona)",
+        aisle: "Rayon Frais & Laitiers (Milbona)",
+        packSize: 450,
+        packUnit: "pot da 450 g",
+        portionStep: 50,
+        c: 4.0, p: 11.0, l: 0.2
+    },
+    fiocchi_avena: {
+        name: "Fiocchi d'avena integrali",
+        frName: "Flocons d'avoine complète (Crownfield)",
+        aisle: "Épicerie Sucrée & Petit-déjeuner (Crownfield / Maribel)",
+        packSize: 500,
+        packUnit: "paquet da 500 g",
+        portionStep: 10,
+        c: 58.7, p: 13.5, l: 7.0
+    },
+    fette_biscottate_int: {
+        name: "Fette biscottate integrali",
+        frName: "Biscottes au blé complet (Maître Jean Pierre)",
+        aisle: "Épicerie Sucrée & Petit-déjeuner (Crownfield / Maribel)",
+        packSize: 300,
+        packUnit: "paquet da 300 g",
+        c: 68.0, p: 13.0, l: 8.8
+    },
+    burro_arachidi: {
+        name: "Burro di arachidi 100% naturale",
+        frName: "Beurre de cacahuète 100% (Maribel)",
+        aisle: "Épicerie Sucrée & Petit-déjeuner (Crownfield / Maribel)",
+        packSize: 350,
+        packUnit: "pot da 350 g",
+        c: 15.3, p: 23.1, l: 50.0
+    },
+    mandorle: {
+        name: "Mandorle dolci non pelate",
+        frName: "Amandes naturelles entières (Alesto)",
+        aisle: "Fruits Secs & Oléagineux (Alesto)",
+        packSize: 200,
+        packUnit: "sachet da 200 g",
+        c: 4.8, p: 24.5, l: 53.3
+    },
+    mirtilli: {
+        name: "Mirtilli freschi",
+        frName: "Myrtilles fraîches (o surgelate Freshona)",
+        aisle: "Fruits & Légumes (Marché Lidl)",
+        packSize: 250,
+        packUnit: "barquette da 250 g",
+        c: 12.0, p: 0.7, l: 0.3
+    },
+
+    // Fonti glucidiche pranzo, cena e spuntino (Etichette Lidl France + CREA per tuberi/frutta)
+    riso_basmati: {
+        name: "Riso basmati (peso a crudo)",
+        frName: "Riz Basmati (Golden Sun)",
+        aisle: "Épicerie Salée & Féculents (Golden Sun / Combino)",
+        packSize: 1000,
+        packUnit: "paquet da 1 kg",
+        c: 78.0, p: 8.6, l: 1.1
+    },
+    pasta_integrale: {
+        name: "Pasta di semola integrale",
+        frName: "Bio Pâtes complètes blé dur (Combino)",
+        aisle: "Épicerie Salée & Féculents (Golden Sun / Combino)",
+        packSize: 500,
+        packUnit: "paquet da 500 g",
+        c: 62.0, p: 12.0, l: 2.0
+    },
+    couscous: {
+        name: "Couscous di grano duro",
+        frName: "Grains de couscous moyen (Golden Sun)",
+        aisle: "Épicerie Salée & Féculents (Golden Sun / Combino)",
+        packSize: 1000,
+        packUnit: "paquet da 1 kg",
+        c: 73.0, p: 12.0, l: 2.0
+    },
+    quinoa: {
+        name: "Quinoa e bulgur (mix)",
+        frName: "Mélange Quinoa & Boulgour (Golden Sun)",
+        aisle: "Épicerie Salée & Féculents (Golden Sun / Combino)",
+        packSize: 400,
+        packUnit: "sachet da 400 g",
+        c: 62.0, p: 12.0, l: 4.0
+    },
+    riso_venere: {
+        name: "Riso Venere / integrale",
+        frName: "Riz noir complet / Riz complet (Golden Sun)",
+        aisle: "Épicerie Salée & Féculents (Golden Sun / Combino)",
+        packSize: 500,
+        packUnit: "paquet da 500 g",
+        c: 71.0, p: 8.5, l: 2.8
+    },
+    patate: {
+        name: "Patate a pasta gialla (sbucciate)",
+        frName: "Pommes de terre vapeur / chair ferme",
+        aisle: "Fruits & Légumes (Marché Lidl)",
+        packSize: 1500,
+        packUnit: "filet da 1,5 kg",
+        c: 16.0, p: 2.0, l: 0.1
+    },
+    patate_dolci: {
+        name: "Patate dolci americane (batata)",
+        frName: "Patates douces (vrac)",
+        aisle: "Fruits & Légumes (Marché Lidl)",
+        packSize: 500,
+        packUnit: "sfuso (~500 g)",
+        c: 20.0, p: 1.6, l: 0.1
+    },
+    pane_segale: {
+        name: "Pane di segale integrale",
+        frName: "Pain de seigle complet tranché (Maître Jean Pierre)",
+        aisle: "Boulangerie & Pains",
+        packSize: 500,
+        packUnit: "paquet da 500 g",
+        c: 36.0, p: 5.3, l: 1.7
+    },
+    pane_integrale: {
+        name: "Pane integrale a fette",
+        frName: "Pain complet tranché (Maître Jean Pierre)",
+        aisle: "Boulangerie & Pains",
+        packSize: 500,
+        packUnit: "paquet da 500 g",
+        c: 35.0, p: 9.5, l: 2.2
+    },
+    gallette_saraceno: {
+        name: "Gallette di grano saraceno / mais",
+        frName: "Galettes de maïs ou sarrasin Bio (Sondey)",
+        aisle: "Épicerie Salée & Féculents (Golden Sun / Combino)",
+        packSize: 130,
+        packUnit: "paquet da 130 g",
+        c: 78.0, p: 8.2, l: 2.6
+    },
+    gallette_riso: {
+        name: "Gallette di riso integrale",
+        frName: "Galettes de riz complet Bio (Sondey)",
+        aisle: "Épicerie Salée & Féculents (Golden Sun / Combino)",
+        packSize: 130,
+        packUnit: "paquet da 130 g",
+        c: 79.0, p: 8.5, l: 3.3
+    },
+    banana: {
+        name: "Banana matura",
+        frName: "Bananes (vrac)",
+        aisle: "Fruits & Légumes (Marché Lidl)",
+        packSize: 1000,
+        packUnit: "régime (~1 kg)",
+        c: 17.4, p: 1.2, l: 0.3
+    },
+
+    passata_mutti: {
+        name: "Passata di pomodoro (Mutti)",
+        frName: "Purée de tomates (Mutti)",
+        aisle: "Épicerie Salée & Féculents (Golden Sun / Combino)",
+        packSize: 560, packUnit: "barattolo da 560 g", shelfDays: 5, openWord: "barattolo", canRange: [80, 200],
+        c: 5.1, p: 1.6, l: 0.2
+    },
+
+    // Fonti proteiche (Etichette Lidl France + CREA per tagli freschi)
+    petto_pollo: {
+        name: "Petto di pollo fresco / scaloppine",
+        frName: "Filets / Escalopes de poulet (L'Étal du Volailler)",
+        aisle: "Boucherie & Volaille (L'Étal)",
+        packSize: 500,
+        packUnit: "barquette da 500 g",
+        freezable: true,
+        portionStep: 100,
+        c: 0.0, p: 23.3, l: 0.8
+    },
+    manzo_macinato: {
+        name: "Macinato di manzo 15% (steak hachés, 10 × 100 g)",
+        frName: "10 Steaks hachés pur bœuf 15% MG surgelés (L'Étal du Boucher) – 1 kg",
+        aisle: "Poissonnerie & Surgelés (Ocean Sea)",
+        packSize: 1000,
+        packUnit: "sachet surgelé da 10 steak (1 kg)",
+        portionStep: 100,
+        c: 0.5, p: 19.0, l: 15.0
+    },
+    steak_maiale: {
+        name: "Steak di maiale (carré di maiale, 5 pezzi da 80 g)",
+        frName: "5 Steaks de porc – L'Étal du Boucher – 400 g",
+        aisle: "Boucherie & Volaille (L'Étal)",
+        packSize: 400,
+        packUnit: "barquette da 5 steak (400 g)",
+        freezable: true,
+        portionStep: 80,
+        c: 0.0, p: 21.0, l: 8.0
+    },
+    tonno_naturale: {
+        name: "Filetti di tonno al naturale sgocciolato",
+        frName: "Thon entier albacore au naturel (Nixe)",
+        aisle: "Épicerie Salée & Féculents (Golden Sun / Combino)",
+        packSize: 140,
+        packUnit: "boîte (140 g sgocciolato)",
+        portionStep: 140,
+        c: 0.0, p: 26.0, l: 0.7
+    },
+    merluzzo: {
+        name: "Tranci di merluzzo d'Alaska (Colin d'Alaska)",
+        frName: "Tranche de colin de alaska",
+        aisle: "Poissonnerie & Surgelés (Ocean Sea)",
+        packSize: 400,
+        packUnit: "sachet/boîte",
+        freezable: true,
+        portionStep: 100,
+        c: 0.0, p: 17.8, l: 0.6
+    },
+    salmone_selvaggio: {
+        name: "Filetto di salmone selvaggio",
+        frName: "Pavés de saumon sauvage (Ocean Sea)",
+        aisle: "Poissonnerie & Surgelés (Ocean Sea)",
+        packSize: 300,
+        packUnit: "boîte/barquette da 300 g",
+        freezable: true,
+        c: 0.0, p: 21.5, l: 7.5
+    },
+    // Uova intere fresche: la chiave resta "mix_uova_albumi" per compatibilità con i salvataggi e le ricette.
+    // Porzione a multipli di 50 g (= 1 uovo), con limite 100-200 g (2-4 uova) applicato in solveVariableMeal3x3.
+    mix_uova_albumi: {
+        name: "Uova intere fresche (1 uovo ≈ 50 g)",
+        frName: "Œufs frais plein air calibre M/L (boîte de 12)",
+        aisle: "Rayon Frais & Laitiers (Milbona)",
+        packSize: 600,
+        packUnit: "boîte da 12 œufs (~600 g)",
+        portionStep: 50,
+        c: 0.7, p: 12.4, l: 8.5
+    },
+    fiocchi_latte_light: {
+        name: "Fiocchi di latte (Cottage Cheese)",
+        frName: "Cottage Cheese (Milbona)",
+        aisle: "Rayon Frais & Laitiers (Milbona)",
+        packSize: 200,
+        packUnit: "pot da 200 g",
+        c: 2.8, p: 11.5, l: 4.5
+    },
+
+    // Fonti lipidiche (Etichette Lidl France - Alesto / Primadonna)
+    olio_evo: {
+        name: "Olio extravergine d'oliva",
+        frName: "Huile d'olive vierge extra (Primadonna)",
+        aisle: "Épicerie Salée & Féculents (Golden Sun / Combino)",
+        packSize: 750,
+        packUnit: "bouteille da 750 ml",
+        c: 0.0, p: 0.0, l: 99.9
+    },
+    noci: {
+        name: "Noci secche sgusciate",
+        frName: "Cerneaux de noix (Alesto)",
+        aisle: "Fruits Secs & Oléagineux (Alesto)",
+        packSize: 200,
+        packUnit: "sachet da 200 g",
+        c: 3.7, p: 15.5, l: 69.1
+    },
+    nocciole: {
+        name: "Nocciole sgusciate",
+        frName: "Noisettes décortiquées (Alesto)",
+        aisle: "Fruits Secs & Oléagineux (Alesto)",
+        packSize: 200,
+        packUnit: "sachet da 200 g",
+        c: 6.0, p: 14.3, l: 63.0
+    },
+
+    // Legumi (cotti e sgocciolati: boîte; piselli surgelati). Valori medi per 100 g, da verificare sull'etichetta acquistata
+    lenticchie: {
+        name: "Lenticchie secche (lentilles blondes)",
+        frName: "Lentilles blondes (Golden Sun)",
+        aisle: "Épicerie Salée & Féculents (Golden Sun / Combino)",
+        packSize: 500, packUnit: "sachet Golden Sun da 500 g (peso a secco)",
+        legume: true, c: 54.4, p: 26.1, l: 1.9
+    },
+    ceci: {
+        name: "Ceci cotti (sgocciolati)",
+        frName: "Pois chiches Freshona égouttés (boîte)",
+        aisle: "Épicerie Salée & Féculents (Golden Sun / Combino)",
+        packSize: 240, packUnit: "boîte Freshona da 400 g (240 g sgocciolato)", shelfDays: 3,
+        legume: true, c: 14.0, p: 7.0, l: 2.5
+    },
+    fagioli_rossi: {
+        name: "Fagioli rossi cotti (sgocciolati)",
+        frName: "Haricots rouges Freshona égouttés (boîte)",
+        aisle: "Épicerie Salée & Féculents (Golden Sun / Combino)",
+        packSize: 255, packUnit: "boîte Freshona da 410 g (255 g sgocciolato)", shelfDays: 2,
+        legume: true, c: 13.0, p: 7.5, l: 0.5
+    },
+    piselli: {
+        name: "Piselli (surgelati)",
+        frName: "Petits pois extra-fins surgelés",
+        aisle: "Poissonnerie & Surgelés (Ocean Sea)",
+        packSize: 1000, packUnit: "sachet da 1 kg",
+        legume: true, c: 9.0, p: 5.5, l: 0.5
+    },
+
+    // Altre fonti di grasso: avocado, parmigiano, olive (valori medi per 100 g, da verificare sull'etichetta)
+    avocado: {
+        name: "Avocado maturo (polpa)",
+        frName: "Avocat (vrac)",
+        aisle: "Fruits & Légumes (Marché Lidl)",
+        packSize: 200, packUnit: "pezzo (~200 g con buccia e nocciolo)",
+        c: 1.8, p: 1.9, l: 15.0
+    },
+    parmigiano: {
+        name: "Parmigiano Reggiano AOP",
+        frName: "Parmigiano Reggiano AOP (Italiamo, pezzo)",
+        aisle: "Rayon Frais & Laitiers (Milbona)",
+        packSize: 100, packUnit: "pezzo da 100 g",
+        c: 0.0, p: 32.0, l: 30.0
+    },
+    olive: {
+        name: "Olive verdi denocciolate",
+        frName: "Olives vertes dénoyautées (bocal / barquette)",
+        aisle: "Épicerie Salée & Féculents (Golden Sun / Combino)",
+        packSize: 150, packUnit: "bocal / barquette (~150 g sgocciolato)",
+        c: 1.5, p: 1.0, l: 15.0
+    },
+
+    // Verdure e ortaggi a grammatura controllata (Tabelle CREA)
+    zucchine: {
+        name: "Zucchine fresche",
+        frName: "Courgettes (vrac)",
+        aisle: "Fruits & Légumes (Marché Lidl)",
+        packSize: 500,
+        packUnit: "sfuso (~500 g)",
+        c: 2.1, p: 1.3, l: 0.1
+    },
+    pomodorini: {
+        name: "Pomodorini datterini freschi",
+        frName: "Tomates cerises en grappe",
+        aisle: "Fruits & Légumes (Marché Lidl)",
+        packSize: 500,
+        packUnit: "barquette da 500 g",
+        c: 3.5, p: 0.9, l: 0.2
+    },
+    fagiolini: {
+        name: "Fagiolini verdi freschi",
+        frName: "Haricots verts extra-fins (freschi)",
+        aisle: "Fruits & Légumes (Marché Lidl)",
+        packSize: 1000,
+        packUnit: "sachet da 1 kg",
+        c: 2.4, p: 2.1, l: 0.1
+    },
+    carote: {
+        name: "Carote fresche",
+        frName: "Carottes (sachet)",
+        aisle: "Fruits & Légumes (Marché Lidl)",
+        packSize: 1000,
+        packUnit: "sachet da 1 kg",
+        c: 7.6, p: 1.1, l: 0.2
+    },
+    spinaci: {
+        name: "Spinaci (surgelati)",
+        frName: "Épinards hachés / en branches surgelés",
+        aisle: "Poissonnerie & Surgelés (Ocean Sea)",
+        packSize: 1000,
+        packUnit: "sachet da 1 kg",
+        c: 1.8, p: 2.9, l: 0.4
+    },
+    broccoli: {
+        name: "Cime di broccolo",
+        frName: "Brocolis (freschi o surgelati Freshona)",
+        aisle: "Fruits & Légumes (Marché Lidl)",
+        packSize: 500,
+        packUnit: "testa/busta da 500 g",
+        c: 3.1, p: 3.0, l: 0.4
+    },
+    peperoni: {
+        name: "Peperoni misti",
+        frName: "Poivrons tricolores",
+        aisle: "Fruits & Légumes (Marché Lidl)",
+        packSize: 500,
+        packUnit: "sachet da 500 g",
+        c: 4.2, p: 0.9, l: 0.3
+    },
+};
+
+/**
+ * Frazione di parte edibile (CREA 2019) per passare dal peso netto nel piatto al peso lordo nella lista della spesa.
+ */
+const EDIBLE = {
+    patate: 0.83, banana: 0.65, carote: 0.95, peperoni: 0.82,
+    broccoli: 0.51, fagiolini: 0.95,
+    patate_dolci: 0.85, zucchine: 0.88, avocado: 0.65
+};
+Object.entries(EDIBLE).forEach(([k, v]) => { FOOD_DB[k].edibile = v; });
+
+/**
+ * Template di colazione: lo Skyr 0% / Yogurt Greco 0% Milbona è rigorosamente bloccato a 200 g.
+ */
+const BREAKFAST_OPTIONS = [
+    {
+        title: "Porridge d'avena con Skyr 0% Milbona (200 g fissi), burro di arachidi e mirtilli",
+        fixedYogurtKey: "skyr_0",
+        fixedYogurtGrams: 200,
+        carbSource: "fiocchi_avena",
+        fatSource: "burro_arachidi",
+        fixedFruit: { foodKey: "mirtilli", grams: 80 },
+        aromas: "Cannella in polvere o vaniglia, pizzico di sale",
+        recipe: "In un pentolino, cuocere a fiamma dolce i fiocchi d'avena ({fiocchi_avena}) con acqua (circa il doppio del peso) e un pizzico di sale per 3-4 minuti mescolando fino a gelatinizzazione degli amidi. Lasciar intiepidire lievemente, trasferire in ciotola con lo Skyr 0% ({skyr_0}), spolverare di cannella e completare in superficie con il burro di arachidi ({burro_arachidi}) e i mirtilli ({mirtilli})."
+    },
+    {
+        title: "Skyr 0% Milbona (200 g fissi) con fette biscottate integrali, mandorle e mirtilli",
+        fixedYogurtKey: "skyr_0",
+        fixedYogurtGrams: 200,
+        carbSource: "fette_biscottate_int",
+        fatSource: "mandorle",
+        fixedFruit: { foodKey: "mirtilli", grams: 80 },
+        aromas: "Cannella o scorza di limone grattugiata",
+        recipe: "Versare lo Skyr 0% ({skyr_0}) in una ciotola capiente e aromatizzarlo con cannella o scorza di limone. Unire i mirtilli ({mirtilli}) e le mandorle ({mandorle}) intere o grossolanamente tritate (anche leggermente tostate a secco in padella per esaltarne la frazione aromatica), accompagnando con le fette biscottate integrali ({fette_biscottate_int})."
+    }
+];
+
+/**
+ * Pasta col tonno (disponibile sia a pranzo sia a cena): cipolla, tonno, olio EVO e pomodoro, nient'altro.
+ * Il pomodoro è pomodorini freschi oppure passata Mutti: la scelta non è fissa ma la fa getLegumeAlloc.
+ * Vince la passata quando il pasto cade nei giorni di vita di un barattolo già aperto da altre ricette (finisce il barattolo
+ * senza aprirne uno nuovo); altrimenti pomodorini. Tonno: 1 scatoletta (140 g sgocciolato), 2 al massimo se servono per i macro.
+ */
+const TUNA_PASTA = {
+    title: "Pasta integrale con tonno al naturale, cipolla e pomodorini o passata Mutti, olio EVO",
+    carbSource: "pasta_integrale", protSource: "tonno_naturale", fatSource: "olio_evo",
+    protMaxG: 280,
+    aromas: "Sale, ½ cipolla",
+    tomatoVariants: {
+        pomodorini: {
+            title: "Pasta integrale con tonno al naturale, cipolla e pomodorini, olio EVO",
+            fixedBase: { foodKey: "pomodorini", grams: 150 },
+            recipe: "Lessare la pasta integrale ({pasta_integrale}) in acqua salata. Scaldare metà dell'olio EVO ({half:olio_evo}) e stufare la cipolla tritata con un pizzico di sale finché è morbida. Aggiungere i pomodorini ({pomodorini}) tagliati a metà e cuocere 8-10 minuti, schiacciandoli appena, finché rilasciano il succo. Spegnere la fiamma, unire il tonno sgocciolato ({tonno_naturale}), saltare la pasta con un mestolo di acqua di cottura e chiudere con l'olio residuo a crudo ({half:olio_evo})."
+        },
+        passata_mutti: {
+            title: "Pasta integrale con tonno al naturale, cipolla e passata Mutti, olio EVO",
+            fixedBase: { foodKey: "passata_mutti", grams: 100 },
+            recipe: "Lessare la pasta integrale ({pasta_integrale}) in acqua salata. Scaldare metà dell'olio EVO ({half:olio_evo}) e stufare la cipolla tritata con un pizzico di sale finché è morbida. Aggiungere la passata Mutti ({passata_mutti}) e cuocere 8-10 minuti finché il sugo si restringe. Spegnere la fiamma, unire il tonno sgocciolato ({tonno_naturale}), saltare la pasta con un mestolo di acqua di cottura e chiudere con l'olio residuo a crudo ({half:olio_evo})."
+        }
+    }
+};
+
+/**
+ * Pool di 18 opzioni di Pranzo con ricette specifiche per fornello.
+ */
+const LUNCH_POOL = [
+    {
+        title: "Riso basmati con petto di pollo alla piastra, zucchine e olio EVO",
+        carbSource: "riso_basmati", protSource: "petto_pollo", fatSource: "olio_evo",
+        fixedBase: { foodKey: "zucchine", grams: 200 },
+        aromas: "Sale, succo di limone, curry, ½ cipolla",
+        recipe: "Marinatura rapida: massaggiare il petto di pollo ({petto_pollo}) con succo di limone, sale e curry. Cuocere il riso basmati ({riso_basmati}) per assorbimento (rapporto acqua 2:1). Scaldare metà dell'olio EVO ({half:olio_evo}), rosolare la cipolla e le zucchine ({zucchine}) tagliate a brunoise salandole. Nella stessa padella, cuocere il pollo a fuoco medio (non rovente) per non seccarlo e farlo riposare un minuto. Unire tutto e finire con l'olio residuo a crudo ({half:olio_evo})."
+    },
+    {
+        title: "Pasta integrale con salmone selvaggio, fagiolini lessati e olio EVO",
+        carbSource: "pasta_integrale", protSource: "salmone_selvaggio", fatSource: "olio_evo",
+        fixedBase: { foodKey: "fagiolini", grams: 200 },
+        aromas: "Sale, pepe nero, aneto o prezzemolo, scorza di limone",
+        recipe: "Lessare la pasta integrale ({pasta_integrale}) salata, buttando i fagiolini ({fagiolini}) nella stessa pentola negli ultimi 10 minuti. Scaldare metà dell'olio EVO ({half:olio_evo}), scottare il salmone selvaggio ({salmone_selvaggio}) salato e pepato dal lato della pelle, poi coprire per completare la cottura al vapore interno. Sfaldare il salmone, unire pasta e fagiolini, scorza di limone e l'olio residuo a crudo ({half:olio_evo})."
+    },
+    {
+        title: "Quinoa e bulgur con steak di manzo macinato 15%, spinaci e olio EVO",
+        carbSource: "quinoa", protSource: "manzo_macinato", fatSource: "olio_evo",
+        fixedBase: { foodKey: "spinaci", grams: 200 },
+        aromas: "Sale, pepe nero, ½ cipolla, noce moscata",
+        recipe: "Sciacquare il mix di quinoa e bulgur ({quinoa}) e cuocerlo in acqua salata. Strizzare vigorosamente gli spinaci scongelati ({spinaci}). Scaldare metà dell'olio EVO ({half:olio_evo}), appassire la cipolla, sgranare il manzo 15% ({manzo_macinato}) salando e pepando. Aggiungere gli spinaci e noce moscata solo alla fine per insaporire. Unire il mix di quinoa e bulgur e l'olio residuo a crudo ({half:olio_evo})."
+    },
+    {
+        title: "Riso Venere integrale con tranci di merluzzo d'Alaska, zucchine e olio EVO",
+        carbSource: "riso_venere", protSource: "merluzzo", fatSource: "olio_evo",
+        fixedBase: { foodKey: "zucchine", grams: 200 },
+        aromas: "Sale, 1 spicchio d'aglio, prezzemolo, succo di limone",
+        recipe: "Bollire il riso Venere ({riso_venere}) in acqua salata. Scaldare metà dell'olio EVO ({half:olio_evo}) e aglio, saltare le zucchine ({zucchine}) salandole. Spostarle ai bordi, adagiare i tranci di merluzzo ({merluzzo}), spruzzare succo di limone, aggiungere prezzemolo, due cucchiai d'acqua e coprire per 8 minuti. Unire al riso e finire con l'olio residuo a crudo ({half:olio_evo})."
+    },
+    {
+        title: "Pasta integrale al ragù di manzo 15% con passata Mutti, zucchine e olio EVO",
+        carbSource: "pasta_integrale", protSource: "manzo_macinato", fatSource: "olio_evo",
+        fixedBase: [{ foodKey: "zucchine", grams: 150 }, { foodKey: "passata_mutti", grams: 100 }],
+        aromas: "Sale, pepe nero, ½ cipolla",
+        recipe: "Lessare la pasta integrale ({pasta_integrale}) salata. Scaldare metà dell'olio EVO ({half:olio_evo}) con cipolla, sgranare il manzo 15% ({manzo_macinato}) e salare per estrarre i succhi. Aggiungere la passata Mutti ({passata_mutti}) e pepe, sobbollire. Grattugiare le zucchine ({zucchine}) e unirle negli ultimi minuti. Saltare la pasta nel sugo e chiudere con l'olio residuo a crudo ({half:olio_evo})."
+    },
+    {
+        title: "Couscous mediterraneo con tranci di merluzzo d'Alaska, pomodorini e olio EVO",
+        carbSource: "couscous", protSource: "merluzzo", fatSource: "olio_evo",
+        fixedBase: { foodKey: "pomodorini", grams: 180 },
+        aromas: "Sale, 1 spicchio d'aglio, origano, capperi, succo di limone",
+        recipe: "Reidratare il couscous ({couscous}) in acqua salata. Scaldare metà dell'olio EVO ({half:olio_evo}) con aglio, pomodorini ({pomodorini}), origano, capperi e sale. Adagiare i tranci di merluzzo ({merluzzo}), coprire (l'acqua dei pomodori cuocerà il pesce). Sgranare il couscous direttamente in padella, aggiungere limone e l'olio residuo a crudo ({half:olio_evo})."
+    },
+    {
+        title: "Patate dolci in padella con petto di pollo alle erbe, broccoli e mandorle",
+        carbSource: "patate_dolci", protSource: "petto_pollo", fatSource: "mandorle",
+        fixedBase: { foodKey: "broccoli", grams: 200 },
+        aromas: "Sale, ½ cipolla, erbe provenzali / rosmarino, paprika affumicata",
+        recipe: "(Cottura in padella): Tagliare le patate dolci ({patate_dolci}) a cubetti piccoli. Stufarle coperte con cipolla, un goccio d'acqua e sale. Scoprire, alzare la fiamma e aggiungere il petto di pollo ({petto_pollo}) a straccetti (precedentemente salato e strofinato con erbe provenzali e paprika) per rosolare. Sbollentare i broccoli ({broccoli}). Tostare le mandorle ({mandorle}) a secco in padella per attivare gli oli essenziali e unirle al piatto."
+    },
+    {
+        title: "Poke bowl di riso Venere con salmone selvaggio, spinaci e avocado",
+        carbSource: "riso_venere", protSource: "salmone_selvaggio", fatSource: "avocado",
+        fixedBase: { foodKey: "spinaci", grams: 180 },
+        aromas: "Sale, salsa di soia, succo di lime/limone, zenzero grattugiato",
+        recipe: "Scongelare e strizzare gli spinaci ({spinaci}), quindi condirli con limone e sale. Bollire il riso Venere ({riso_venere}) salato. Scottare il salmone selvaggio ({salmone_selvaggio}) in padella antiaderente coperta. Preparare una marinata a freddo con salsa di soia, succo di lime e zenzero grattugiato per condire l'avocado ({avocado}) a fette e il salmone, poi assemblare la bowl."
+    },
+    {
+        title: "Pasta integrale e ceci con tonno al naturale e olio EVO",
+        carbSource: "pasta_integrale", protSource: "tonno_naturale", fatSource: "olio_evo",
+        fixedBase: { foodKey: "ceci", grams: 150 },
+        aromas: "Sale, 1 rametto di rosmarino, 1 spicchio d'aglio, peperoncino",
+        recipe: "Scaldare metà dell'olio EVO ({half:olio_evo}) infondendo un rametto di rosmarino, poi rimuoverlo. Frullare 1/3 dei ceci (su {ceci} totali) con quell'olio, acqua di cottura della pasta e sale. In padella saltare aglio, peperoncino, i ceci interi restanti e il tonno sgocciolato ({tonno_naturale}). Lessare la pasta integrale ({pasta_integrale}) al dente e mantecarla con la crema, il condimento e l'olio residuo a crudo ({half:olio_evo})."
+    },
+    {
+        title: "Riso Venere e lenticchie con uova sode e olio EVO",
+        carbSource: "riso_venere", protSource: "mix_uova_albumi", fatSource: "olio_evo",
+        fixedBase: { foodKey: "lenticchie", grams: 60 },
+        aromas: "Sale, pepe nero, cipolla rossa, aceto o succo di limone",
+        recipe: "Bollire il riso Venere ({riso_venere}) in acqua salata. In un altro pentolino sciacquare le lenticchie secche ({lenticchie}) e lessarle 20-25 minuti in acqua (senza ammollo), poi scolarle. Lessare le uova intere ({mix_uova_albumi}) per 8-9 minuti. Macerare fettine di cipolla rossa in aceto o limone per 10 minuti (fondamentale per dare acidità e togliere il pungente). Unire al Venere le lenticchie, la cipolla scolata, sale, pepe, uova in quarti e l'olio EVO a crudo ({olio_evo})."
+    },
+    {
+        title: "Riso basmati con petto di pollo, piselli e olio EVO",
+        carbSource: "riso_basmati", protSource: "petto_pollo", fatSource: "olio_evo",
+        fixedBase: { foodKey: "piselli", grams: 150 },
+        aromas: "Sale, curry, 1 cucchiaio di Skyr o limone per marinare",
+        recipe: "Marinare il petto di pollo ({petto_pollo}) a dadini con un cucchiaino di Skyr (o limone), curry e sale per intenerirlo. Bollire il riso basmati ({riso_basmati}), calando i piselli surgelati ({piselli}) negli ultimi 5 minuti. Scaldare metà dell'olio EVO ({half:olio_evo}) per sciogliere ulteriore curry (estrazione liposolubile) e cuocere il pollo a fuoco medio. Scolare riso e piselli, unire e finire con l'olio residuo a crudo ({half:olio_evo})."
+    },
+    {
+        title: "Chili con carne di manzo 15% con fagioli rossi, passata Mutti e peperoni, riso Venere e olio EVO",
+        carbSource: "riso_venere", protSource: "manzo_macinato", fatSource: "olio_evo",
+        fixedBase: [{ foodKey: "fagioli_rossi", grams: 130 }, { foodKey: "peperoni", grams: 120 }, { foodKey: "passata_mutti", grams: 100 }],
+        aromas: "Sale, ½ cipolla, 1 spicchio d'aglio, paprika, cumino, peperoncino",
+        recipe: "Bollire il riso Venere ({riso_venere}) in acqua salata. Scaldare metà dell'olio EVO ({half:olio_evo}) con aglio e cipolla, tostare paprika e cumino. Aggiungere il manzo 15% ({manzo_macinato}) e salare. Unire i peperoni ({peperoni}) a dadini, i fagioli rossi sciacquati ({fagioli_rossi}) e la passata Mutti ({passata_mutti}). Sobbollire per 15 minuti. Servire sul Venere bollito, chiudendo con l'olio residuo a crudo ({half:olio_evo})."
+    },
+    {
+        title: "Pasta integrale con ragù di manzo 15%, lenticchie e passata Mutti, olio EVO",
+        carbSource: "pasta_integrale", protSource: "manzo_macinato", fatSource: "olio_evo",
+        fixedBase: [{ foodKey: "lenticchie", grams: 40 }, { foodKey: "passata_mutti", grams: 100 }],
+        aromas: "Sale, ½ cipolla, abbondante origano, pepe nero",
+        recipe: "Sciacquare le lenticchie secche ({lenticchie}) e lessarle 20-25 minuti in acqua (senza ammollo), poi scolarle tenendo un mestolo della loro acqua. Lessare la pasta integrale ({pasta_integrale}) in acqua salata. Scaldare metà dell'olio EVO ({half:olio_evo}) con cipolla, rosolare il manzo 15% ({manzo_macinato}) con sale e abbondante origano. Aggiungere la passata Mutti ({passata_mutti}) e il pepe, e sobbollire una decina di minuti finché il ragù si addensa; unire quindi le lenticchie lessate: la passata e un po' della loro acqua di cottura eviteranno che le lenticchie secchino. Saltare la pasta nel sugo con l'olio residuo a crudo ({half:olio_evo})."
+    },
+    {
+        title: "Couscous speziato con petto di pollo, ceci e carote, olio EVO",
+        carbSource: "couscous", protSource: "petto_pollo", fatSource: "olio_evo",
+        fixedBase: [{ foodKey: "ceci", grams: 120 }, { foodKey: "carote", grams: 100 }],
+        aromas: "Sale, ½ cipolla, curcuma, curry, succo di limone",
+        recipe: "Scaldare metà dell'olio EVO ({half:olio_evo}) con cipolla, tostare curcuma e curry. Aggiungere il petto di pollo ({petto_pollo}) salato e le carote ({carote}) a fettine sottili. Inserire i ceci ({ceci}) alla fine. Reidratare il couscous ({couscous}) in acqua salata, sgranarlo nella padella, spruzzare succo di limone e aggiungere l'olio residuo a crudo ({half:olio_evo})."
+    },
+    {
+        title: "Insalata di quinoa e bulgur con tonno al naturale, avocado e pomodorini",
+        carbSource: "quinoa", protSource: "tonno_naturale", fatSource: "avocado",
+        fixedBase: { foodKey: "pomodorini", grams: 120 },
+        aromas: "Sale, pepe nero, cipolla rossa, aceto o limone, 1 punta di senape",
+        recipe: "Sciacquare e bollire il mix di quinoa e bulgur ({quinoa}) in acqua salata. Macerare la cipolla rossa in aceto o succo di limone per 10 minuti. In una boule mescolare il mix di quinoa e bulgur, il tonno sgocciolato ({tonno_naturale}), l'avocado ({avocado}) a cubetti, i pomodorini ({pomodorini}), la cipolla scolata, sale, pepe e una punta di senape per legare i sapori."
+    },
+    {
+        title: "Pasta integrale con petto di pollo, pomodorini, olive e scaglie di parmigiano, olio EVO",
+        carbSource: "pasta_integrale", protSource: "petto_pollo", fatSource: "olio_evo",
+        fixedBase: [{ foodKey: "pomodorini", grams: 120 }, { foodKey: "olive", grams: 30 }, { foodKey: "parmigiano", grams: 15 }],
+        aromas: "Sale, 1 spicchio d'aglio, origano",
+        recipe: "Lessare la pasta integrale ({pasta_integrale}) in acqua salata. Scaldare metà dell'olio EVO ({half:olio_evo}) con aglio e rosolare il petto di pollo ({petto_pollo}) salato a fiamma media. Aggiungere i pomodorini ({pomodorini}) e le olive ({olive}), spegnendo la fiamma appena appassiscono. Mantecare la pasta e finire con l'olio residuo a crudo ({half:olio_evo}) e le scaglie di parmigiano ({parmigiano}) per umami extra."
+    },
+    {
+        title: "Bowl di riso basmati con uova, avocado e spinaci",
+        carbSource: "riso_basmati", protSource: "mix_uova_albumi", fatSource: "avocado",
+        fixedBase: { foodKey: "spinaci", grams: 80 },
+        aromas: "Sale, pepe nero, 1 spicchio d'aglio, noce moscata, 1 cucchiaino di salsa di soia",
+        recipe: "Cuocere il riso basmati ({riso_basmati}). Strizzare gli spinaci scongelati ({spinaci}), lucidarli in padella con aglio, sale e noce moscata, poi rimuoverli. Cuocere le uova intere ({mix_uova_albumi}) al padellino (tuorlo fondente) salando e pepando. Aggiungere un cucchiaino di salsa di soia sul riso caldo e disporre sopra spinaci, avocado ({avocado}) e uova."
+    },
+    TUNA_PASTA
+];
+
+/**
+ * Pool di 16 opzioni di Cena con ricette specifiche per fornello.
+ */
+const DINNER_POOL = [
+    {
+        title: "Tranci di merluzzo d'Alaska in umido con patate lesse, broccoli e olio EVO",
+        carbSource: "patate", protSource: "merluzzo", fatSource: "olio_evo",
+        fixedBase: { foodKey: "broccoli", grams: 200 },
+        aromas: "Sale, 1 spicchio d'aglio, prezzemolo, succo di limone, 1 pomodorino o cucchiaio di passata",
+        recipe: "(In padella): Bollire le patate ({patate}) e i broccoli ({broccoli}) in acqua salata. Scaldare metà dell'olio EVO ({half:olio_evo}) con aglio. Adagiare i tranci di merluzzo ({merluzzo}), un cucchiaio di passata o un pomodorino spezzato (per dare fondo aromatico), sale, mezzo bicchiere d'acqua e coprire. Servire finendo con l'olio residuo a crudo ({half:olio_evo}) e succo di limone."
+    },
+    {
+        title: "Omelette di uova con pane integrale, peperoni e olio EVO",
+        carbSource: "pane_integrale", protSource: "mix_uova_albumi", fatSource: "olio_evo",
+        fixedBase: { foodKey: "peperoni", grams: 180 },
+        aromas: "Sale, ½ cipolla, paprika o erba cipollina",
+        recipe: "Stufare i peperoni ({peperoni}) a listarelle con metà dell'olio EVO ({half:olio_evo}), cipolla e sale. Sbattere le uova intere ({mix_uova_albumi}) con sale e paprika. Versare in padella antiaderente calda, adagiare i peperoni e ripiegare l'omelette mantenendola bavosa. Tostare il pane integrale ({pane_integrale}) e completare con l'olio residuo a crudo ({half:olio_evo})."
+    },
+    {
+        title: "Steak di maiale alla piastra con patate dolci, fagiolini e olio EVO",
+        carbSource: "patate_dolci", protSource: "steak_maiale", fatSource: "olio_evo",
+        fixedBase: { foodKey: "fagiolini", grams: 200 },
+        aromas: "Sale, ½ cipolla, senape, rosmarino",
+        recipe: "Stufare le patate dolci ({patate_dolci}) a fiammifero in padella con metà dell'olio EVO ({half:olio_evo}), cipolla, sale e coperchio. Scoprire per dorare, poi rimuovere. Marinare le steak di maiale ({steak_maiale}) in senape e sale, cuocendole a fuoco medio nella stessa padella per non seccarle. Lessare i fagiolini ({fagiolini}) e finire tutto con l'olio residuo a crudo ({half:olio_evo})."
+    },
+    {
+        title: "Petto di pollo alle erbe con patate a spicchi in padella, peperoni e olio EVO",
+        carbSource: "patate", protSource: "petto_pollo", fatSource: "olio_evo",
+        fixedBase: { foodKey: "peperoni", grams: 180 },
+        aromas: "Sale, ½ cipolla, timo o rosmarino, succo di limone",
+        recipe: "(In padella): Sbollentare i cubetti o spicchi di patata ({patate}) per 5 minuti. Saltare patate e peperoni ({peperoni}) con metà dell'olio EVO ({half:olio_evo}), cipolla, timo e sale. Fare spazio al centro e rosolare il petto di pollo ({petto_pollo}) marinato brevemente in sale e limone. Chiudere con l'olio residuo a crudo ({half:olio_evo})."
+    },
+    {
+        title: "Steak di manzo macinato 15% con pane integrale tostato, fagiolini e olio EVO",
+        carbSource: "pane_integrale", protSource: "manzo_macinato", fatSource: "olio_evo",
+        fixedBase: { foodKey: "fagiolini", grams: 200 },
+        aromas: "Sale, pepe nero, 1 spicchio d'aglio",
+        recipe: "Tostare il pane integrale ({pane_integrale}) in padella. Scaldare metà dell'olio EVO ({half:olio_evo}) e scottare le steak di manzo 15% ({manzo_macinato}) salate e pepate a fuoco vivace per creare la crosta (Maillard), lasciando l'interno succoso. Lessare i fagiolini ({fagiolini}), ripassarli rapidamente nell'aglio e sale e completare con l'olio residuo a crudo ({half:olio_evo})."
+    },
+    {
+        title: "Pavé di salmone selvaggio in padella con patate lesse, broccoli e olio EVO",
+        carbSource: "patate", protSource: "salmone_selvaggio", fatSource: "olio_evo",
+        fixedBase: { foodKey: "broccoli", grams: 200 },
+        aromas: "Sale, pepe rosa o aneto, succo di limone",
+        recipe: "(In padella): Bollire le patate ({patate}) e i broccoli ({broccoli}) in acqua salata. Scaldare metà dell'olio EVO ({half:olio_evo}), scottare il salmone selvaggio ({salmone_selvaggio}) salato partendo dalla pelle, aggiungere pepe rosa o aneto e coprire negli ultimi due minuti. Servire con limone e l'olio residuo a crudo ({half:olio_evo})."
+    },
+    {
+        title: "Steak di maiale arrostito con pane di segale, peperoni e noci",
+        carbSource: "pane_segale", protSource: "steak_maiale", fatSource: "noci",
+        fixedBase: { foodKey: "peperoni", grams: 180 },
+        aromas: "Sale, ½ cipolla, paprika",
+        recipe: "Tostare a secco le noci ({noci}) in padella e metterle da parte. Nella stessa padella stufare i peperoni ({peperoni}) con cipolla e sale finché collassano, poi rimuoverli. Cuocere le steak di maiale ({steak_maiale}) salate a fuoco medio spolverate di paprika. Servire sul pane di segale ({pane_segale}) con i peperoni e le noci."
+    },
+    {
+        title: "Insalatona proteica con tonno al naturale, crostini integrali, carote e olio EVO",
+        carbSource: "pane_integrale", protSource: "tonno_naturale", fatSource: "olio_evo",
+        fixedBase: { foodKey: "carote", grams: 180 },
+        aromas: "Sale, origano, cipolla rossa, aceto",
+        recipe: "Tostare il pane integrale ({pane_integrale}) a cubetti con metà dell'olio EVO ({half:olio_evo}) e origano fino a renderlo croccante. Grattugiare le carote ({carote}). Macerare la cipolla rossa in aceto per 10 minuti. Mescolare il tonno sgocciolato ({tonno_naturale}), le carote, la cipolla e il sale, completando con i crostini e l'olio residuo a crudo ({half:olio_evo})."
+    },
+    {
+        title: "Vellutata di lenticchie con passata Mutti, pane integrale, petto di pollo e olio EVO",
+        carbSource: "pane_integrale", protSource: "petto_pollo", fatSource: "olio_evo",
+        fixedBase: [{ foodKey: "lenticchie", grams: 50 }, { foodKey: "passata_mutti", grams: 100 }],
+        aromas: "Sale, pepe nero, ½ cipolla, 1 spicchio d'aglio, rosmarino",
+        recipe: "Scaldare metà dell'olio EVO ({half:olio_evo}) con aglio e cipolla. Aggiungere le lenticchie secche sciacquate ({lenticchie}), la passata Mutti ({passata_mutti}), circa 400 ml di acqua calda e il rosmarino. Cuocere con il coperchio a fuoco medio-basso per 25-30 minuti, finché le lenticchie sono tenere (aggiungere acqua se si asciuga), salare a fine cottura e ridurre tutto in crema. Rosolare il petto di pollo ({petto_pollo}) tagliato a striscioline (salato e pepato). Tostare il pane integrale ({pane_integrale}) e servire la vellutata con il pollo sopra e l'olio residuo a crudo ({half:olio_evo})."
+    },
+    {
+        title: "Tranci di merluzzo d'Alaska con ceci e couscous alle erbe, olio EVO",
+        carbSource: "couscous", protSource: "merluzzo", fatSource: "olio_evo",
+        fixedBase: { foodKey: "ceci", grams: 150 },
+        aromas: "Sale, 1 spicchio d'aglio, curcuma, succo di limone, erbe aromatiche",
+        recipe: "Scaldare metà dell'olio EVO ({half:olio_evo}) con aglio e tostare la curcuma. Aggiungere i tranci di merluzzo ({merluzzo}), i ceci sciacquati ({ceci}), sale e coprire per cuocere in umido. Reidratare il couscous ({couscous}) salato e sgranarlo nel sugo speziato della padella per far assorbire i liquidi. Finire con succo di limone e l'olio residuo a crudo ({half:olio_evo})."
+    },
+    {
+        title: "Chili di manzo 15% e fagioli rossi con passata Mutti, riso basmati e olio EVO",
+        carbSource: "riso_basmati", protSource: "manzo_macinato", fatSource: "olio_evo",
+        fixedBase: [{ foodKey: "fagioli_rossi", grams: 150 }, { foodKey: "passata_mutti", grams: 100 }],
+        aromas: "Sale, ½ cipolla, peperoncino, cumino",
+        recipe: "Scaldare metà dell'olio EVO ({half:olio_evo}) con la cipolla e tostare peperoncino e cumino. Sgranare il manzo 15% ({manzo_macinato}) e salare. Aggiungere i fagioli rossi ({fagioli_rossi}), la passata Mutti ({passata_mutti}) e poca acqua, riducendo a fiamma viva per addensare. Servire a specchio sul riso basmati ({riso_basmati}) bollito e salato, completando con l'olio residuo a crudo ({half:olio_evo})."
+    },
+    {
+        title: "Stufato di maiale con fagioli rossi, riso Venere e carote, olio EVO",
+        carbSource: "riso_venere", protSource: "steak_maiale", fatSource: "olio_evo",
+        fixedBase: [{ foodKey: "fagioli_rossi", grams: 130 }, { foodKey: "carote", grams: 100 }],
+        aromas: "Sale, pepe nero, ½ cipolla, 1 cucchiaio di passata o brodo, alloro",
+        recipe: "Bollire il riso Venere ({riso_venere}) in acqua salata. Scaldare metà dell'olio EVO ({half:olio_evo}) con cipolla e rosolare le steak di maiale ({steak_maiale}) tagliate a bocconcini e salate. Cottura breve per non stopparlo: aggiungere le carote ({carote}), i fagioli rossi ({fagioli_rossi}) e un cucchiaio di passata o brodo per creare il sugo. Cuocere 10 minuti coperto e servire con il Venere e l'olio residuo a crudo ({half:olio_evo})."
+    },
+    {
+        title: "Zuppa di ceci, quinoa e bulgur con tranci di merluzzo d'Alaska e pomodorini, olio EVO",
+        carbSource: "quinoa", protSource: "merluzzo", fatSource: "olio_evo",
+        fixedBase: [{ foodKey: "ceci", grams: 130 }, { foodKey: "pomodorini", grams: 100 }],
+        aromas: "Sale, ½ cipolla, 1 spicchio d'aglio, timo",
+        recipe: "In pentola scaldare metà dell'olio EVO ({half:olio_evo}) con cipolla e aglio schiacciato. Aggiungere acqua, portare a bollore e salare. Inserire il mix di quinoa e bulgur ({quinoa}) sciacquato, i ceci ({ceci}), i pomodorini ({pomodorini}) e il timo. Negli ultimi 7 minuti, calare i tranci di merluzzo ({merluzzo}) nel brodo per cuocerli dolcemente. Finire con l'olio residuo a crudo ({half:olio_evo})."
+    },
+    {
+        title: "Riso basmati saltato con uova, spinaci e parmigiano, olio EVO",
+        carbSource: "riso_basmati", protSource: "mix_uova_albumi", fatSource: "olio_evo",
+        fixedBase: [{ foodKey: "spinaci", grams: 150 }, { foodKey: "parmigiano", grams: 15 }],
+        aromas: "Sale, pepe nero, 1 spicchio d'aglio, 1 goccio di salsa di soia",
+        recipe: "Lessare il riso basmati ({riso_basmati}) e lasciarlo raffreddare. Strizzare gli spinaci ({spinaci}), insaporirli con metà dell'olio EVO ({half:olio_evo}), aglio e sale, poi rimuoverli. Strapazzare le uova intere ({mix_uova_albumi}) in padella con pepe, unire il riso freddo, gli spinaci e un goccio di salsa di soia, saltando a fiamma alta. A fuoco spento unire il parmigiano ({parmigiano}) e l'olio residuo a crudo ({half:olio_evo})."
+    },
+    {
+        title: "Tranci di merluzzo d'Alaska alla mediterranea con couscous, passata Mutti, pomodorini e olive, olio EVO",
+        carbSource: "couscous", protSource: "merluzzo", fatSource: "olio_evo",
+        fixedBase: [{ foodKey: "pomodorini", grams: 150 }, { foodKey: "passata_mutti", grams: 100 }, { foodKey: "olive", grams: 30 }],
+        aromas: "Sale, 1 spicchio d'aglio, capperi, origano",
+        recipe: "Scaldare metà dell'olio EVO ({half:olio_evo}) con aglio. Aggiungere i pomodorini ({pomodorini}), le olive ({olive}), i capperi, la passata Mutti ({passata_mutti}), origano e sale. Adagiare i tranci di merluzzo ({merluzzo}) nel sugo caldo, coprire e cuocere dolcemente. Servire accompagnando con il couscous ({couscous}) reidratato e l'olio residuo a crudo ({half:olio_evo})."
+    },
+    TUNA_PASTA
+];
+
+/**
+ * Pool di 6 opzioni di Spuntino (alternanza tra supporti secchi e bowl cremose).
+ */
+const SNACK_POOL = [
+    {
+        title: "Pane di segale integrale con Skyr 0% Milbona e noci sgusciate",
+        carbSource: "pane_segale", protSource: "skyr_0", fatSource: "noci", fixedBase: null,
+        aromas: "Cannella o pepe nero a scelta",
+        recipe: "Tostare leggermente il pane di segale ({pane_segale}) in padella asciutta, spalmare sopra lo Skyr 0% ({skyr_0}) e completare con le noci sgusciate ({noci}) spezzettate."
+    },
+    {
+        title: "Fette biscottate integrali con Cottage Cheese Milbona e nocciole",
+        carbSource: "fette_biscottate_int", protSource: "fiocchi_latte_light", fatSource: "nocciole", fixedBase: null,
+        aromas: "Cannella o erba cipollina (versione dolce o salata)",
+        recipe: "Distribuire il Cottage Cheese ({fiocchi_latte_light}) sulle fette biscottate integrali ({fette_biscottate_int}) e guarnire con le nocciole ({nocciole}) tritate."
+    },
+    {
+        title: "Bowl cremosa di Skyr 0% Milbona con banana a rondelle e mandorle",
+        carbSource: "banana", protSource: "skyr_0", fatSource: "mandorle", fixedBase: null,
+        aromas: "Cannella in polvere",
+        recipe: "Versare lo Skyr 0% ({skyr_0}) in una ciotola, unire la banana ({banana}) tagliata a rondelle, le mandorle ({mandorle}) e una spolverata di cannella."
+    },
+    {
+        title: "Banana a fette con Cottage Cheese Milbona e burro di arachidi",
+        carbSource: "banana", protSource: "fiocchi_latte_light", fatSource: "burro_arachidi", fixedBase: null,
+        aromas: "Cannella in polvere",
+        recipe: "Disporre il Cottage Cheese ({fiocchi_latte_light}) in ciotola con la banana ({banana}) a fette e colare sopra il burro di arachidi ({burro_arachidi})."
+    },
+    {
+        title: "Insalata di ceci con tonno al naturale e noci sgusciate",
+        carbSource: "ceci", protSource: "tonno_naturale", fatSource: "noci", fixedBase: null,
+        aromas: "Sale, pepe nero, succo di limone, origano",
+        recipe: "Sciacquare bene i ceci ({ceci}), unirli al tonno al naturale sgocciolato ({tonno_naturale}) e alle noci ({noci}) spezzettate, condendo con succo di limone, origano e pepe nero."
+    },
+    {
+        title: "Fiocchi di latte light con olive e gallette di grano saraceno",
+        carbSource: "gallette_saraceno", protSource: "fiocchi_latte_light", fatSource: "olive", fixedBase: null,
+        aromas: "Origano, pepe nero",
+        recipe: "Unire ai fiocchi di latte ({fiocchi_latte_light}) le olive verdi ({olive}) tagliate a rondelle e una spolverata di origano, accompagnando con le gallette di saraceno ({gallette_saraceno})."
+    }
+];
+
+// Stato globale dell'applicazione
+const state = {
+    sex: "M",
+    goal: "surplus",
+    deltaKcal: 300,
+    activeDay: 0,
+    viewAllDays: false,
+    cheatDay: 6,
+    breakfastIdx: 0,
+    rotationMode: "variety",
+    checkedGroceries: {},
+    openRecipes: {},
+    targets: { c: 0, p: 0, l: 0, kcal: 0 },
+    weekPlan: Array.from({ length: 7 }, (_, i) => ({
+        lunch: i % LUNCH_POOL.length,
+        dinner: (i * 2 + 1) % DINNER_POOL.length,
+        snack: i % SNACK_POOL.length
+    }))
+};
+
+const r5 = x => Math.round(x / 5) * 5;
+const fmt = (n, d = 1) => n.toLocaleString('it-IT', { minimumFractionDigits: d, maximumFractionDigits: d });
+function scheduleRender() { cancelAnimationFrame(scheduleRender.id); scheduleRender.id = requestAnimationFrame(calculateAllAndRender); }
+
+/**
+ * Etichetta della quantità: per le uova affianca ai grammi il numero di uova (1 uovo ≈ 50 g).
+ * Es.: "100 g (2 uova)". Per tutti gli altri alimenti restituisce solo i grammi.
+ */
+function formatItemGramLabel(foodKey, grams) {
+    if (foodKey === 'mix_uova_albumi') {
+        const nEggs = Math.round(grams / 50);
+        return `${grams} g (${nEggs} ${nEggs === 1 ? 'uovo' : 'uova'})`;
+    }
+    return `${grams} g`;
+}
+
+function makeFoodRow(foodKey, grams, isLocked = false) {
+    const food = FOOD_DB[foodKey];
+    const c = (food.c * grams) / 100;
+    const p = (food.p * grams) / 100;
+    const l = (food.l * grams) / 100;
+    return {
+        foodKey: foodKey,
+        name: food.name,
+        frName: food.frName,
+        aisle: food.aisle,
+        packSize: food.packSize,
+        packUnit: food.packUnit,
+        grams: grams,
+        isLocked: isLocked,
+        c: c,
+        p: p,
+        l: l,
+        kcal: (c * 4) + (p * 4) + (l * 9)
+    };
+}
+
+/**
+ * Formatta il testo della ricetta sostituendo i placeholder {foodKey} e {half:foodKey}
+ * con le grammature effettive calcolate per lo specifico pasto.
+ */
+function formatRecipeSteps(templateStr, items) {
+    if (!templateStr) return "";
+    const gMap = {};
+    items.forEach(it => { gMap[it.foodKey] = it.grams; });
+
+    return templateStr.replace(/\{(half:)?([a-z0-9_]+)\}/g, (_, isHalf, key) => {
+        const g = gMap[key];
+        if (g === undefined) return "";
+        if (isHalf) {
+            const halfVal = g / 2;
+            const formatted = Number.isInteger(halfVal) ? String(halfVal) : fmt(halfVal, 1);
+            return `${formatted} g`;
+        }
+        return formatItemGramLabel(key, g);
+    });
+}
+
+/**
+ * Risolve la colazione mantenendo lo Skyr / Yogurt Greco 0% rigorosamente fisso a 200 g
+ * e ricalcolando tramite sistema 2x2 la fonte glucidica e lipidica.
+ */
+function solveMorningFixedYogurt(template, targetC, targetL) {
+    const yogurtRow = makeFoodRow(template.fixedYogurtKey, template.fixedYogurtGrams, true);
+    const fruitRow = makeFoodRow(template.fixedFruit.foodKey, template.fixedFruit.grams, false);
+
+    const netC = Math.max(8, targetC - yogurtRow.c - fruitRow.c);
+    const netL = Math.max(3, targetL - yogurtRow.l - fruitRow.l);
+
+    const fCarb = FOOD_DB[template.carbSource];
+    const fFat = FOOD_DB[template.fatSource];
+
+    const a11 = fCarb.c / 100, a12 = fFat.c / 100;
+    const a21 = fCarb.l / 100, a22 = fFat.l / 100;
+
+    const det2 = (a11 * a22) - (a12 * a21);
+    let wCarb = 40;
+    let wFat = 15;
+
+    if (Math.abs(det2) > 1e-6) {
+        wCarb = (netC * a22 - a12 * netL) / det2;
+        wFat = (a11 * netL - netC * a21) / det2;
+    }
+
+    // Fonte glucidica a multipli fissi (fiocchi d'avena a multipli di 10 g): poi ricalcolo i lipidi sul residuo
+    const stepC = fCarb.portionStep || 0;
+    if (stepC) {
+        wCarb = Math.max(stepC, Math.round(wCarb / stepC) * stepC);
+        if (a22 > 1e-6) wFat = (netL - a21 * wCarb) / a22;
+    }
+
+    wCarb = stepC ? wCarb : Math.max(15, r5(wCarb));
+    wFat = Math.max(5, r5(wFat));
+
+    const carbRow = makeFoodRow(template.carbSource, wCarb, false);
+    const fatRow = makeFoodRow(template.fatSource, wFat, false);
+
+    const items = [yogurtRow, carbRow, fatRow, fruitRow];
+
+    const totals = items.reduce((acc, it) => {
+        acc.c += it.c;
+        acc.p += it.p;
+        acc.l += it.l;
+        acc.kcal += it.kcal;
+        return acc;
+    }, { c: 0, p: 0, l: 0, kcal: 0 });
+
+    return {
+        title: template.title,
+        aromas: template.aromas || "",
+        recipe: template.recipe || "",
+        items: items,
+        totals: totals
+    };
+}
+
+/**
+ * Risolve un pasto variabile (Spuntino, Pranzo, Cena) con sistema lineare 3x3 (regola di Cramer).
+ */
+function solveVariableMeal3x3(template, targetC, targetP, targetL) {
+    const f1 = FOOD_DB[template.carbSource];
+    const f2 = FOOD_DB[template.protSource];
+    const f3 = FOOD_DB[template.fatSource];
+
+    let netC = targetC;
+    let netP = targetP;
+    let netL = targetL;
+    const fixedItems = [].concat(template.fixedBase || []).map(b => makeFoodRow(b.foodKey, b.grams, false));
+    fixedItems.forEach(fi => {
+        netC = Math.max(4, netC - fi.c);
+        netP = Math.max(4, netP - fi.p);
+        netL = Math.max(2, netL - fi.l);
+    });
+
+    const a11 = f1.c / 100, a12 = f2.c / 100, a13 = f3.c / 100;
+    const a21 = f1.p / 100, a22 = f2.p / 100, a23 = f3.p / 100;
+    const a31 = f1.l / 100, a32 = f2.l / 100, a33 = f3.l / 100;
+
+    const det3 = (
+        a11 * (a22 * a33 - a23 * a32) -
+        a12 * (a21 * a33 - a23 * a31) +
+        a13 * (a21 * a32 - a22 * a31)
+    );
+
+    let w1 = 50, w2 = 50, w3 = 5;
+    if (Math.abs(det3) >= 1e-6) {
+        w1 = (
+            netC * (a22 * a33 - a23 * a32) -
+            a12 * (netP * a33 - a23 * netL) +
+            a13 * (netP * a32 - a22 * netL)
+        ) / det3;
+
+        w2 = (
+            a11 * (netP * a33 - a23 * netL) -
+            netC * (a21 * a33 - a23 * a31) +
+            a13 * (a21 * netL - netP * a31)
+        ) / det3;
+
+        w3 = (
+            a11 * (a22 * netL - netP * a32) -
+            a12 * (a21 * netL - netP * a31) +
+            netC * (a21 * a32 - a22 * a31)
+        ) / det3;
+    }
+
+    if (![w1, w2, w3].every(Number.isFinite)) { w1 = 50; w2 = 50; w3 = 5; }
+
+    if (w3 < 5) {
+        w3 = 5;
+        const remC = Math.max(2, netC - a13 * w3);
+        const remP = Math.max(2, netP - a23 * w3);
+        const det2 = (a11 * a22) - (a12 * a21);
+        if (Math.abs(det2) > 1e-6) {
+            w1 = Math.max(10, (remC * a22 - a12 * remP) / det2);
+            w2 = Math.max(10, (a11 * remP - remC * a21) / det2);
+        }
+    }
+
+    // Fonti proteiche vendute a pezzi/porzioni fisse (pollo e manzo: 100 g, maiale: 80 g, colin: 100 g, skyr: 50 g):
+    // la proteina viene portata al multiplo più vicino, poi carboidrati e lipidi
+    // sono ricalcolati sul residuo per non spostare troppo i target del pasto.
+    const step = f2.portionStep || 0;
+    if (step) {
+        w2 = Math.max(step, Math.round(w2 / step) * step);
+        if (template.protMaxG) w2 = Math.min(template.protMaxG, w2);   // es. pasta col tonno: al massimo 2 scatolette
+        // Uova: almeno 2 e al massimo 4 uova a pasto (100-200 g), così non escono quantità inferiori a un uovo
+        if (template.protSource === 'mix_uova_albumi') w2 = Math.min(200, Math.max(100, w2));
+        const rC = netC - a12 * w2;
+        const rL = netL - a32 * w2;
+        const d2 = a11 * a33 - a13 * a31;
+        if (Math.abs(d2) > 1e-6) {
+            w1 = (rC * a33 - a13 * rL) / d2;
+            w3 = (a11 * rL - rC * a31) / d2;
+            if (!Number.isFinite(w1) || !Number.isFinite(w3)) { w1 = 50; w3 = 5; }
+            if (w3 < 5) {
+                w3 = 5;
+                w1 = (rC - a13 * w3) / a11;
+            }
+        }
+    }
+
+    w1 = Math.max(10, r5(w1));
+    w2 = step ? w2 : Math.max(10, r5(w2));
+    w3 = Math.max(5, r5(w3));
+
+    const items = [
+        makeFoodRow(template.carbSource, w1, false),
+        makeFoodRow(template.protSource, w2, false),
+        makeFoodRow(template.fatSource, w3, false)
+    ];
+
+    items.push(...fixedItems);
+
+    const totals = items.reduce((acc, it) => {
+        acc.c += it.c;
+        acc.p += it.p;
+        acc.l += it.l;
+        acc.kcal += it.kcal;
+        return acc;
+    }, { c: 0, p: 0, l: 0, kcal: 0 });
+
+    return {
+        title: template.title,
+        aromas: template.aromas || "",
+        recipe: template.recipe || "",
+        items: items,
+        totals: totals
+    };
+}
+
+// --- Confezioni aperte (legumi in scatola, passata): vanno finite entro `shelfDays` giorni, contati dal giorno dopo l'apertura ---
+// Le porzioni nello stesso intervallo vengono ripartite in modo che la somma sia esattamente il peso utile della confezione.
+const CAN_MIN_G = 40, MEAL_ORDER = { snack: 0, lunch: 1, dinner: 2 };
+let LEG_PREPASS = false;
+const legCache = { key: '', val: null };
+
+function getLegumeAlloc(totalC, totalP, totalL, includeSnack) {
+    const key = JSON.stringify([state.weekPlan, state.cheatDay, state.breakfastIdx, totalC, totalP, totalL, includeSnack]);
+    if (legCache.key === key) return legCache.val;
+    const pools = { snack: SNACK_POOL, lunch: LUNCH_POOL, dinner: DINNER_POOL };
+    const mealKeys = includeSnack ? ['snack', 'lunch', 'dinner'] : ['lunch', 'dinner'];
+    const uses = {}, dayPlans = {}, varMeals = [];
+    const add = (fk, u) => (uses[fk] = uses[fk] || []).push(u);
+    // grammi decisi dal solver (es. snack con ceci come fonte di carboidrati): non modificabili, contano nella lattina
+    const solvedGrams = (d, mk, fk) => {
+        if (!dayPlans[d]) {
+            LEG_PREPASS = true;
+            try { dayPlans[d] = buildSingleDayPlan(d, totalC, totalP, totalL, includeSnack); } finally { LEG_PREPASS = false; }
+        }
+        const it = dayPlans[d].meals.find(m => m.key === mk).items.find(i => i.foodKey === fk);
+        return it ? it.grams : 0;
+    };
+    for (let d = 0; d < 7; d++) {
+        if (d === state.cheatDay) continue;
+        mealKeys.forEach(mk => {
+            const tpl = pools[mk][state.weekPlan[d][mk]];
+            if (tpl.tomatoVariants) varMeals.push({ d, mk });
+            [].concat(tpl.fixedBase || []).forEach(b => { if (FOOD_DB[b.foodKey].shelfDays) add(b.foodKey, { d, mk, flex: true, g: b.grams }); });
+            [tpl.carbSource, tpl.protSource].forEach(fk => { if (FOOD_DB[fk].shelfDays) add(fk, { d, mk, flex: false, g: solvedGrams(d, mk, fk) }); });
+        });
+    }
+    // Pasta col tonno (pomodorini o passata): vince la passata se il pasto cade nella finestra di un barattolo già in uso
+    // (non apre un barattolo nuovo e aiuta a finire il contenuto entro shelfDays); in tutti gli altri casi pomodorini.
+    const variants = {};
+    if (varMeals.length) {
+        const pf = FOOD_DB.passata_mutti, span = pf.shelfDays, lo = pf.canRange[0];
+        const groupUses = list => {
+            const sorted = [...list].sort((a, b) => a.d - b.d || MEAL_ORDER[a.mk] - MEAL_ORDER[b.mk]);
+            const groups = [];
+            for (let i = 0; i < sorted.length;) {
+                const open = sorted[i].d, grp = [];
+                while (i < sorted.length && sorted[i].d <= open + span) grp.push(sorted[i++]);
+                groups.push(grp);
+            }
+            return groups;
+        };
+        varMeals.sort((a, b) => a.d - b.d || MEAL_ORDER[a.mk] - MEAL_ORDER[b.mk]).forEach(vm => {
+            const base = uses.passata_mutti || [];
+            const before = groupUses(base);
+            const candidate = { d: vm.d, mk: vm.mk, flex: true, g: 100 };
+            const after = groupUses([...base, candidate]);
+            const grp = after.find(g => g.includes(candidate));
+            const usePassata = before.length > 0 && after.length === before.length && grp.length <= Math.floor(pf.packSize / lo);
+            variants[`${vm.d}:${vm.mk}`] = usePassata ? 'passata_mutti' : 'pomodorini';
+            if (usePassata) add('passata_mutti', candidate);
+        });
+    }
+    const alloc = { grams: {}, batches: {}, variants };
+    Object.keys(uses).forEach(fk => {
+        const W = FOOD_DB[fk].packSize, span = FOOD_DB[fk].shelfDays;
+        const list = uses[fk].sort((a, b) => a.d - b.d || MEAL_ORDER[a.mk] - MEAL_ORDER[b.mk]);
+        const batches = [];
+        for (let i = 0; i < list.length;) {
+            const open = list[i].d, grp = [];
+            while (i < list.length && list[i].d <= open + span) grp.push(list[i++]);
+            const flex = grp.filter(u => u.flex);
+            if (flex.length) {
+                const rest = Math.max(CAN_MIN_G * flex.length, W - grp.filter(u => !u.flex).reduce((sum, u) => sum + u.g, 0));
+                let given = 0;
+                flex.forEach((u, j) => {
+                    u.g = j === flex.length - 1 ? rest - given : Math.round(rest / flex.length / 5) * 5;
+                    given += u.g;
+                    alloc.grams[`${u.d}:${u.mk}:${fk}`] = u.g;
+                });
+            }
+            batches.push({ open, uses: grp });
+        }
+        alloc.batches[fk] = batches;
+    });
+    legCache.key = key; legCache.val = alloc;
+    return alloc;
+}
+
+// Sostituisce i grammi dei legumi fissi del pasto con quelli ripartiti sulla lattina
+function legumeTpl(tpl, d, mk, alloc) {
+    if (tpl.tomatoVariants) tpl = { ...tpl, ...tpl.tomatoVariants[(alloc && alloc.variants[`${d}:${mk}`]) || 'pomodorini'] };
+    if (!alloc || !tpl.fixedBase) return tpl;
+    return { ...tpl, fixedBase: [].concat(tpl.fixedBase).map(b => {
+        const g = alloc.grams[`${d}:${mk}:${b.foodKey}`];
+        return g ? { ...b, grams: g } : b;
+    }) };
+}
+
+// Penalità per il pianificatore: lattina intera in un solo pasto (porzione enorme o avanzo) o porzioni fuori misura
+function legumeBatchPenalty(alloc) {
+    let pen = 0;
+    Object.entries(alloc.batches).forEach(([fk, bs]) => bs.forEach(b => {
+        const [lo, hi] = FOOD_DB[fk].canRange || [60, 150];
+        if (b.uses.length === 1) pen += 1;
+        else b.uses.forEach(u => { if (u.flex && (u.g < lo || u.g > hi)) pen += 0.5; });
+    }));
+    return pen;
+}
+
+/**
+ * Costruisce il piano completo per uno specifico giorno della settimana.
+ */
+function buildSingleDayPlan(dayIdx, totalC, totalP, totalL, includeSnack) {
+    const legAlloc = LEG_PREPASS ? null : getLegumeAlloc(totalC, totalP, totalL, includeSnack);
+    const bTemplate = BREAKFAST_OPTIONS[state.breakfastIdx];
+    const bShareC = 0.20; // quota dei carboidrati giornalieri assegnata alla colazione (prima 0.26): più carboidrati a pranzo/cena
+    const bShareL = 0.25;
+
+    const breakfastSolved = solveMorningFixedYogurt(
+        bTemplate,
+        totalC * bShareC,
+        totalL * bShareL
+    );
+
+    let remC = Math.max(30, totalC - breakfastSolved.totals.c);
+    let remP = Math.max(30, totalP - breakfastSolved.totals.p);
+    let remL = Math.max(12, totalL - breakfastSolved.totals.l);
+
+    const daySelection = state.weekPlan[dayIdx];
+    const variableConfigs = includeSnack
+        ? [
+            { key: "snack", name: "Spuntino", relShare: 0.16, pool: SNACK_POOL, selectedIdx: daySelection.snack },
+            { key: "lunch", name: "Pranzo", relShare: 0.46, pool: LUNCH_POOL, selectedIdx: daySelection.lunch },
+            { key: "dinner", name: "Cena", relShare: 0.38, pool: DINNER_POOL, selectedIdx: daySelection.dinner }
+        ]
+        : [
+            { key: "lunch", name: "Pranzo", relShare: 0.54, pool: LUNCH_POOL, selectedIdx: daySelection.lunch },
+            { key: "dinner", name: "Cena", relShare: 0.46, pool: DINNER_POOL, selectedIdx: daySelection.dinner }
+        ];
+
+    const meals = [
+        {
+            key: "breakfast",
+            name: "Colazione",
+            isMorningFixed: true,
+            selectedIdx: state.breakfastIdx,
+            pool: BREAKFAST_OPTIONS,
+            ...breakfastSolved
+        }
+    ];
+
+    let trackC = remC;
+    let trackP = remP;
+    let trackL = remL;
+
+    variableConfigs.forEach((cfg, idx) => {
+        const isLast = (idx === variableConfigs.length - 1);
+        const tC = isLast ? Math.max(15, trackC) : remC * cfg.relShare;
+        const tP = isLast ? Math.max(15, trackP) : remP * cfg.relShare;
+        const tL = isLast ? Math.max(6, trackL) : remL * cfg.relShare;
+
+        const solved = solveVariableMeal3x3(legumeTpl(cfg.pool[cfg.selectedIdx], dayIdx, cfg.key, legAlloc), tC, tP, tL);
+        trackC -= solved.totals.c;
+        trackP -= solved.totals.p;
+        trackL -= solved.totals.l;
+
+        meals.push({
+            key: cfg.key,
+            name: cfg.name,
+            isMorningFixed: false,
+            selectedIdx: cfg.selectedIdx,
+            pool: cfg.pool,
+            ...solved
+        });
+    });
+
+    const dayTotals = meals.reduce((acc, m) => {
+        acc.c += m.totals.c;
+        acc.p += m.totals.p;
+        acc.l += m.totals.l;
+        acc.kcal += m.totals.kcal;
+        return acc;
+    }, { c: 0, p: 0, l: 0, kcal: 0 });
+
+    return { meals, dayTotals };
+}
+
+/**
+ * Aggrega tutti gli alimenti dei 6 giorni di dieta attiva (escludendo il giorno di sgarro)
+ * raggruppandoli per reparto Lidl Francia e calcolando confezioni ed eventuale quota da congelare.
+ */
+function aggregateWeeklyGroceries(totalC, totalP, totalL, includeSnack) {
+    const map = {};
+    const legAlloc = getLegumeAlloc(totalC, totalP, totalL, includeSnack);
+
+    for (let d = 0; d < 7; d++) {
+        if (d === state.cheatDay) continue;
+        const dayPlan = buildSingleDayPlan(d, totalC, totalP, totalL, includeSnack);
+
+        dayPlan.meals.forEach(meal => {
+            meal.items.forEach(item => {
+                const aggKey = item.foodKey;
+                const refFood = FOOD_DB[aggKey];
+                if (refFood.pantry) return;
+
+                if (!map[aggKey]) {
+                    map[aggKey] = {
+                        foodKey: aggKey,
+                        name: refFood.name,
+                        frName: refFood.frName,
+                        aisle: refFood.aisle,
+                        packSize: refFood.packSize,
+                        packUnit: refFood.packUnit,
+                        freezable: !!refFood.freezable,
+                        totalGrams: 0,
+                        occurrences: 0,
+                        edibile: refFood.edibile || 1
+                    };
+                }
+                map[aggKey].totalGrams += item.grams / (refFood.edibile || 1);
+                map[aggKey].occurrences += 1;
+            });
+        });
+    }
+
+    const groupedByAisle = {};
+    LIDL_AISLES_ORDER.forEach(a => { groupedByAisle[a] = []; });
+
+    let totalItemsCount = 0;
+    let totalWeightGrams = 0;
+
+    Object.values(map).forEach(entry => {
+        entry.totalGrams = Math.round(entry.totalGrams / 10) * 10;
+        const cans = legAlloc.batches[entry.foodKey];
+        entry.packsNeeded = cans ? cans.length : Math.max(1, Math.ceil(entry.totalGrams / entry.packSize));
+        entry.canNote = cans ? cans.map((b, i) => `${FOOD_DB[entry.foodKey].openWord || 'lattina'} ${i + 1}: ${[...new Set(b.uses.map(u => DAYS_IT[u.d].slice(0, 3)))].join(' + ')}${b.uses.length === 1 ? ' (tutta in un pasto)' : ''}`).join(' • ') : '';
+        entry.freezerSurplus = entry.freezable
+            ? Math.max(0, (entry.packsNeeded * entry.packSize) - entry.totalGrams)
+            : 0;
+        totalItemsCount += 1;
+        totalWeightGrams += entry.totalGrams;
+        if (!groupedByAisle[entry.aisle]) {
+            groupedByAisle[entry.aisle] = [];
+        }
+        groupedByAisle[entry.aisle].push(entry);
+    });
+
+    Object.keys(groupedByAisle).forEach(aisle => {
+        groupedByAisle[aisle].sort((a, b) => b.totalGrams - a.totalGrams);
+    });
+
+    return {
+        groupedByAisle,
+        totalItemsCount,
+        totalWeightGrams
+    };
+}
+
+function formatWeight(grams) {
+    if (grams >= 1000) {
+        return `${fmt((grams / 1000), 2)} kg (${grams} g)`;
+    }
+    return `${grams} g`;
+}
+
+function renderShoppingList(totalC, totalP, totalL, includeSnack) {
+    const { groupedByAisle, totalItemsCount, totalWeightGrams } = aggregateWeeklyGroceries(totalC, totalP, totalL, includeSnack);
+    const container = document.getElementById('shoppingListContainer');
+    container.innerHTML = '';
+
+    let checkedCount = 0;
+
+    LIDL_AISLES_ORDER.forEach(aisle => {
+        const items = groupedByAisle[aisle];
+        if (!items || items.length === 0) return;
+
+        const aisleDiv = document.createElement('div');
+        aisleDiv.className = 'aisle-group';
+
+        const rowsHtml = items.map(item => {
+            const isChecked = !!state.checkedGroceries[item.foodKey];
+            if (isChecked) checkedCount += 1;
+
+            const freezerHtml = (item.freezerSurplus >= 60)
+                ? `<div><span class="freezer-badge">❄ Freezer: avanzano ~${item.freezerSurplus} g da porzionare e congelare</span></div>`
+                : '';
+
+            return `
+                <label class="shop-item ${isChecked ? 'checked' : ''}" data-foodkey="${item.foodKey}">
+                    <div class="shop-left">
+                        <input type="checkbox" class="shop-checkbox" data-foodkey="${item.foodKey}" ${isChecked ? 'checked' : ''}>
+                        <div>
+                            <div class="shop-name-fr">${item.frName}</div>
+                            <div class="shop-name-it">${item.name}</div>
+                            <div class="shop-meta">Presente in ${item.occurrences} pasti sui 6 giorni attivi${item.edibile < 1 ? ' • peso al lordo degli scarti' : ''}</div>
+                            ${item.canNote ? `<div class="shop-meta">🥫 ${item.canNote}</div>` : ''}
+                            ${freezerHtml}
+                        </div>
+                    </div>
+                    <div class="shop-right">
+                        <div class="shop-total-weight">${formatWeight(item.totalGrams)}</div>
+                        <span class="shop-packs">🛒 ${item.packsNeeded} × ${item.packUnit}</span>
+                    </div>
+                </label>
+            `;
+        }).join('');
+
+        aisleDiv.innerHTML = `
+            <div class="aisle-header">
+                <span>📍 ${aisle}</span>
+                <span>${items.length} prodott${items.length === 1 ? 'o' : 'i'}</span>
+            </div>
+            <div>${rowsHtml}</div>
+        `;
+
+        container.appendChild(aisleDiv);
+    });
+
+    document.getElementById('shopTotalItems').textContent = totalItemsCount;
+    document.getElementById('shopTotalKg').textContent = fmt((totalWeightGrams / 1000), 1);
+    document.getElementById('shopCheckedCount').textContent = `${checkedCount}/${totalItemsCount}`;
+
+    container.querySelectorAll('.shop-checkbox').forEach(cb => {
+        cb.addEventListener('change', (e) => {
+            const key = e.target.getAttribute('data-foodkey');
+            state.checkedGroceries[key] = e.target.checked;
+            e.target.closest('.shop-item').classList.toggle('checked', e.target.checked);
+            const n = container.querySelectorAll('.shop-checkbox:checked').length;
+            document.getElementById('shopCheckedCount').textContent = `${n}/${totalItemsCount}`;
+            saveState();
+        });
+    });
+}
+
+function buildLidlShoppingText(totalC, totalP, totalL, includeSnack) {
+    const { groupedByAisle, totalItemsCount, totalWeightGrams } = aggregateWeeklyGroceries(totalC, totalP, totalL, includeSnack);
+    const kcal = state.targets.kcal.toLocaleString('it-IT');
+
+    let txt = `🛒 LISTE DE COURSES HEBDOMADAIRE – LIDL FRANCE\n`;
+    txt += `Copertura: 6 giorni di dieta attiva (escluso ${DAYS_IT[state.cheatDay]})\n`;
+    txt += `Target giornaliero: ${kcal} kcal | Totale articoli: ${totalItemsCount} (~${fmt((totalWeightGrams / 1000), 1)} kg)\n`;
+    txt += `================================================\n\n`;
+
+    LIDL_AISLES_ORDER.forEach(aisle => {
+        const items = groupedByAisle[aisle];
+        if (!items || items.length === 0) return;
+
+        txt += `📍 ${aisle.toUpperCase()}\n`;
+        items.forEach(it => {
+            const mark = state.checkedGroceries[it.foodKey] ? "[x]" : "[ ]";
+            const freezeNote = (it.freezerSurplus >= 60) ? ` [❄ Freezer: avanzano ~${it.freezerSurplus} g]` : '';
+            txt += `${mark} ${it.frName} (${it.name})\n`;
+            txt += `    ↳ Fabbisogno: ${formatWeight(it.totalGrams)}  |  Confezioni: ${it.packsNeeded} × ${it.packUnit}${freezeNote}${it.canNote ? ` [🥫 ${it.canNote}]` : ''}\n`;
+        });
+        txt += `\n`;
+    });
+
+    return txt;
+}
+
+function computeMacroTargets() {
+    const weight = parseFloat(document.getElementById('weight').value);
+    const height = parseFloat(document.getElementById('height').value);
+    const age = parseInt(document.getElementById('age').value, 10);
+    const laf = parseFloat(document.getElementById('activity').value);
+    const profile = document.getElementById('macroProfile').value;
+
+    const sCoeff = state.sex === "M" ? 5 : -161;
+    const bmr = (10 * weight) + (6.25 * height) - (5 * age) + sCoeff;
+    const tdee = bmr * laf;
+
+    let targetKcal = tdee;
+    let deficitClamped = false;
+    if (state.goal === "surplus") {
+        targetKcal = tdee + state.deltaKcal;
+    } else if (state.goal === "deficit") {
+        deficitClamped = (tdee - state.deltaKcal) < bmr;
+        targetKcal = Math.max(bmr, tdee - state.deltaKcal);
+    }
+
+    let protG = weight * 2.0;
+    let fatG = (targetKcal * 0.26) / 9;
+
+    if (profile === "high_carb") {
+        protG = weight * 1.8;
+        fatG = (targetKcal * 0.22) / 9;
+    } else if (profile === "recomp") {
+        protG = weight * 2.2;
+        fatG = (targetKcal * 0.27) / 9;
+    } else if (profile === "zone") {
+        protG = (targetKcal * 0.25) / 4;
+        fatG = (targetKcal * 0.25) / 9;
+    }
+
+    protG = Math.round(protG);
+    fatG = Math.max(Math.round(weight * 0.75), Math.round(fatG));
+    const carbG = Math.max(80, Math.round((targetKcal - (protG * 4) - (fatG * 9)) / 4));
+    const exactKcal = (carbG * 4) + (protG * 4) + (fatG * 9);
+    state.targets = { c: carbG, p: protG, l: fatG, kcal: exactKcal };
+
+    return { weight, height, age, bmr, tdee, carbG, protG, fatG, exactKcal, deficitClamped };
+}
+
+function calculateAllAndRender() {
+    const { weight, height, age, bmr, tdee, carbG, protG, fatG, exactKcal, deficitClamped } = computeMacroTargets();
+    const includeSnack = document.getElementById('snackToggle').value === "4";
+    state.rotationMode = document.getElementById('rotationMode').value;
+
+    document.getElementById('weightLbl').textContent = fmt(weight, 1);
+    document.getElementById('heightLbl').textContent = height;
+    document.getElementById('ageLbl').textContent = age;
+
+    const bmi = weight / Math.pow(height / 100, 2);
+    document.getElementById('bmiTag').textContent = `BMI: ${fmt(bmi, 1)}`;
+
+    const deltaBox = document.getElementById('deltaBox');
+    if (state.goal === "maintenance") {
+        deltaBox.style.display = "none";
+        document.getElementById('targetSub').textContent = "Bilancio normocalorico (100% TDEE)";
+    } else {
+        deltaBox.style.display = "block";
+        if (state.goal === "surplus") {
+            document.getElementById('deltaTitle').textContent = "Entità del surplus calorico";
+            document.getElementById('deltaValLbl').textContent = `+${state.deltaKcal} kcal`;
+            document.getElementById('targetSub').textContent = `Surplus: +${state.deltaKcal} kcal/die`;
+        } else {
+            document.getElementById('deltaTitle').textContent = "Entità del deficit calorico";
+            document.getElementById('deltaValLbl').textContent = `−${state.deltaKcal} kcal`;
+            document.getElementById('targetSub').textContent = `Deficit: −${state.deltaKcal} kcal/die` + (deficitClamped ? ' (limitato al BMR)' : '');
+        }
+    }
+
+    const pC = Math.round(((carbG * 4) / exactKcal) * 100);
+    const pP = Math.round(((protG * 4) / exactKcal) * 100);
+    const pL = 100 - pC - pP;
+
+    document.getElementById('bmrOut').textContent = Math.round(bmr).toLocaleString('it-IT');
+    document.getElementById('tdeeOut').textContent = Math.round(tdee).toLocaleString('it-IT');
+    document.getElementById('targetOut').textContent = exactKcal.toLocaleString('it-IT');
+
+    document.getElementById('barC').style.width = `${pC}%`;
+    document.getElementById('barP').style.width = `${pP}%`;
+    document.getElementById('barL').style.width = `${pL}%`;
+
+    document.getElementById('pctC').textContent = `${pC}%`;
+    document.getElementById('gC').textContent = carbG;
+    document.getElementById('kcalC').textContent = (carbG * 4);
+    document.getElementById('kgC').textContent = fmt((carbG / weight), 1);
+
+    document.getElementById('pctP').textContent = `${pP}%`;
+    document.getElementById('gP').textContent = protG;
+    document.getElementById('kcalP').textContent = (protG * 4);
+    document.getElementById('kgP').textContent = fmt((protG / weight), 1);
+
+    document.getElementById('pctL').textContent = `${pL}%`;
+    document.getElementById('gL').textContent = fatG;
+    document.getElementById('kcalL').textContent = (fatG * 9);
+    document.getElementById('kgL').textContent = fmt((fatG / weight), 1);
+
+    renderWeekNavigation();
+    renderSchedule(carbG, protG, fatG, includeSnack);
+    renderShoppingList(carbG, protG, fatG, includeSnack);
+    renderPresetChips();
+    syncPressed();
+    const sig = [carbG, protG, fatG, includeSnack, state.cheatDay].join('|');
+    if (state.targetSig !== sig) { state.targetSig = sig; scheduleAutoRepair(); }
+    saveState();
+}
+
+function syncViewAllBtn() {
+    const b = document.getElementById('viewAllBtn');
+    b.classList.toggle('active', state.viewAllDays);
+    b.textContent = state.viewAllDays ? "Mostra giorno singolo" : "Mostra tutti i 6 giorni";
+}
+
+function renderWeekNavigation() {
+    syncViewAllBtn();
+    const nav = document.getElementById('weekNav');
+    nav.innerHTML = '';
+
+    DAYS_IT.forEach((dayName, idx) => {
+        const isCheat = (idx === state.cheatDay);
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'day-tab' +
+            (isCheat ? ' cheat-tab' : '') +
+            (!state.viewAllDays && state.activeDay === idx ? ' active' : '');
+        btn.innerHTML = `${dayName.substring(0, 3)}${isCheat ? ' 🍕' : ''}`;
+        btn.addEventListener('click', () => {
+            state.viewAllDays = false;
+            state.activeDay = idx;
+            document.getElementById('viewAllBtn').classList.remove('active');
+            calculateAllAndRender();
+        });
+        nav.appendChild(btn);
+    });
+}
+
+function renderSchedule(totalC, totalP, totalL, includeSnack) {
+    const container = document.getElementById('scheduleContainer');
+    container.innerHTML = '';
+
+    const daysToRender = state.viewAllDays
+        ? [0, 1, 2, 3, 4, 5, 6].filter(d => d !== state.cheatDay)
+        : [state.activeDay];
+
+    daysToRender.forEach(dayIdx => {
+        if (dayIdx === state.cheatDay) {
+            const cheatDiv = document.createElement('div');
+            cheatDiv.className = 'cheat-card';
+            cheatDiv.innerHTML = `
+                <h3>🍕 ${DAYS_IT[dayIdx]}: Giorno di sgarro / Pasto libero</h3>
+                <p>Questo giorno è escluso sia dal calcolo stechiometrico giornaliero sia dalla lista della spesa settimanale per Lidl Francia.</p>
+            `;
+            container.appendChild(cheatDiv);
+            return;
+        }
+
+        const dayPlan = buildSingleDayPlan(dayIdx, totalC, totalP, totalL, includeSnack);
+
+        const dayHead = document.createElement('div');
+        dayHead.className = 'day-section-header';
+        dayHead.innerHTML = `
+            <span>📅 ${DAYS_IT[dayIdx]} (Giorno di dieta attivo)</span>
+            <span>${Math.round(dayPlan.dayTotals.kcal)} kcal</span>
+        `;
+        container.appendChild(dayHead);
+
+        dayPlan.meals.forEach(meal => {
+            const box = document.createElement('div');
+            box.className = 'meal-box';
+
+            const rKey = `${dayIdx}_${meal.key}`;
+            const isOpen = !!state.openRecipes[rKey];
+
+            const tagHtml = meal.isMorningFixed
+                ? `<span class="pill-tag fixed-morning">Skyr 200 g fisso • Costante 6/6 gg</span>`
+                : `<span class="pill-tag">Opzione variabile</span>`;
+
+            const optionsHtml = meal.pool.map((opt, oIdx) =>
+                `<option value="${oIdx}" ${oIdx === meal.selectedIdx ? 'selected' : ''}>${opt.title}</option>`
+            ).join('');
+
+            const ingPillsHtml = meal.items.map(it => {
+                if (it.foodKey === 'olio_evo' && (meal.key === 'lunch' || meal.key === 'dinner')) {
+                    const half = it.grams / 2;
+                    const halfStr = Number.isInteger(half) ? String(half) : fmt(half, 1);
+                    return `<span class="recipe-ing-pill">${it.name}: ${it.grams} g (${halfStr} g cottura + ${halfStr} g crudo)</span>`;
+                }
+                return `<span class="recipe-ing-pill">${it.name}: ${formatItemGramLabel(it.foodKey, it.grams)}</span>`;
+            }).join('');
+
+            const aromaPillHtml = meal.aromas
+                ? `<span class="recipe-aroma-pill">🌿 Aromi & condimenti: ${meal.aromas}</span>`
+                : '';
+
+            const formattedSteps = formatRecipeSteps(meal.recipe, meal.items);
+
+            const foodsHtml = meal.items.map(item => `
+                <div class="food-row">
+                    <div>
+                        <div class="food-info-name">${item.name}</div>
+                        <div class="food-info-fr">🇫🇷 ${item.frName}</div>
+                        <div class="food-info-macros">
+                            C: ${fmt(item.c, 1)} g •
+                            P: ${fmt(item.p, 1)} g •
+                            L: ${fmt(item.l, 1)} g (${Math.round(item.kcal)} kcal)
+                        </div>
+                    </div>
+                    <span class="gram-badge ${item.isLocked ? 'locked' : ''}">
+                        ${formatItemGramLabel(item.foodKey, item.grams)} ${item.isLocked ? '🔒' : ''}
+                    </span>
+                </div>
+            `).join('');
+
+            box.innerHTML = `
+                <div class="meal-box-head">
+                    <div class="meal-title">
+                        <span>${meal.name}</span>
+                        ${tagHtml}
+                    </div>
+                    <span class="pill-tag">${Math.round(meal.totals.kcal)} kcal</span>
+                </div>
+                <div class="meal-selector-bar">
+                    <select data-day="${dayIdx}" data-meal="${meal.key}" class="meal-opt-select" aria-label="Opzione per ${meal.name.toLowerCase()}">
+                        ${optionsHtml}
+                    </select>
+                    <button type="button" class="recipe-info-btn" data-rkey="${rKey}" aria-expanded="${isOpen}" aria-controls="recipe-note-${rKey}" title="Mostra o nascondi la ricetta e le istruzioni di preparazione">ⓘ</button>
+                </div>
+                <div class="recipe-note ${isOpen ? 'open' : ''}" id="recipe-note-${rKey}" role="region" aria-label="Ricetta ${meal.title}">
+                    <div class="recipe-note-head">
+                        <div class="recipe-note-title">📖 Ricetta & preparazione: ${meal.title}</div>
+                        <button type="button" class="recipe-close-btn" data-rclose="${rKey}" aria-label="Chiudi ricetta">✕ Chiudi</button>
+                    </div>
+                    <div class="recipe-ingredients-bar">
+                        ${ingPillsHtml}
+                        ${aromaPillHtml}
+                    </div>
+                    <div class="recipe-steps-text">${formattedSteps}</div>
+                </div>
+                <div class="food-list">
+                    ${foodsHtml}
+                </div>
+                <div class="meal-footer">
+                    <span>Subtotale ${meal.name.toLowerCase()}</span>
+                    <span>C: ${Math.round(meal.totals.c)} g • P: ${Math.round(meal.totals.p)} g • L: ${Math.round(meal.totals.l)} g</span>
+                </div>
+            `;
+
+            container.appendChild(box);
+        });
+
+        const tKcal = totalC * 4 + totalP * 4 + totalL * 9;
+        const dev = (a, b) => Math.abs(a - b) / b;
+        const offTarget = dev(dayPlan.dayTotals.kcal, tKcal) > 0.05 || dev(dayPlan.dayTotals.c, totalC) > 0.10 ||
+            dev(dayPlan.dayTotals.p, totalP) > 0.10 || dev(dayPlan.dayTotals.l, totalL) > 0.10;
+        const verBar = document.createElement('div');
+        verBar.className = 'day-verification';
+        verBar.innerHTML = `
+            <strong>Totale effettivo ${DAYS_IT[dayIdx]}:</strong>
+            <span>${Math.round(dayPlan.dayTotals.kcal)} kcal &bull; Carboidrati: ${Math.round(dayPlan.dayTotals.c)} g &bull; Proteine: ${Math.round(dayPlan.dayTotals.p)} g &bull; Lipidi: ${Math.round(dayPlan.dayTotals.l)} g</span>
+        `;
+        if (offTarget) {
+            verBar.classList.add('warn');
+            verBar.insertAdjacentHTML('beforeend', '<span style="flex-basis:100%">⚠ Scostamento dal target (kcal &gt; 5% o macro &gt; 10%): prova a cambiare una delle opzioni dei pasti.</span>');
+        }
+        container.appendChild(verBar);
+    });
+
+    container.querySelectorAll('.meal-opt-select').forEach(sel => {
+        sel.addEventListener('change', (e) => {
+            const dIdx = parseInt(e.target.getAttribute('data-day'), 10);
+            const mKey = e.target.getAttribute('data-meal');
+            const val = parseInt(e.target.value, 10);
+
+            if (mKey === 'breakfast') {
+                state.breakfastIdx = val;
+                document.getElementById('breakfastTemplateSelect').value = String(val);
+            } else {
+                state.weekPlan[dIdx][mKey] = val;
+            }
+            calculateAllAndRender();
+        });
+    });
+
+    container.querySelectorAll('.recipe-info-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const rKey = btn.getAttribute('data-rkey');
+            const noteEl = document.getElementById(`recipe-note-${rKey}`);
+            const nextState = !state.openRecipes[rKey];
+            state.openRecipes[rKey] = nextState;
+            btn.setAttribute('aria-expanded', String(nextState));
+            if (noteEl) noteEl.classList.toggle('open', nextState);
+        });
+    });
+
+    container.querySelectorAll('.recipe-close-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const rKey = btn.getAttribute('data-rclose');
+            state.openRecipes[rKey] = false;
+            const noteEl = document.getElementById(`recipe-note-${rKey}`);
+            const infoBtn = container.querySelector(`.recipe-info-btn[data-rkey="${rKey}"]`);
+            if (noteEl) noteEl.classList.remove('open');
+            if (infoBtn) infoBtn.setAttribute('aria-expanded', 'false');
+        });
+    });
+}
+
+// Controlli UI: Sesso
+document.querySelectorAll('[data-sex]').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.querySelectorAll('[data-sex]').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        state.sex = btn.getAttribute('data-sex');
+        calculateAllAndRender();
+    });
+});
+
+// Controlli UI: Obiettivo metabolico
+const PRESETS = {
+    surplus: [{ v: 200, l: 'Lean' }, { v: 300, l: 'Standard' }, { v: 450, l: 'Spinto' }],
+    deficit: [{ v: 300, l: 'Leggero' }, { v: 500, l: 'Moderato' }, { v: 700, l: 'Deciso' }]
+};
+const GOAL_DEFAULT_DELTA = { surplus: 300, deficit: 500 };
+
+function renderPresetChips() {
+    const sign = state.goal === 'deficit' ? '−' : '+';
+    document.getElementById('presetChips').innerHTML = (PRESETS[state.goal] || []).map(p =>
+        `<button type="button" class="chip${p.v === state.deltaKcal ? ' active' : ''}" data-val="${p.v}">${p.l} (${sign}${p.v})</button>`
+    ).join('');
+}
+
+document.querySelectorAll('[data-goal]').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.querySelectorAll('[data-goal]').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        state.goal = btn.getAttribute('data-goal');
+        if (GOAL_DEFAULT_DELTA[state.goal]) {
+            state.deltaKcal = GOAL_DEFAULT_DELTA[state.goal];
+            document.getElementById('deltaSlider').value = state.deltaKcal;
+        }
+        calculateAllAndRender();
+    });
+});
+
+// Slider e pulsanti + / - per Peso, Altezza, Età
+document.querySelectorAll('.btn-step[data-target]').forEach(btn => {
+    btn.addEventListener('click', () => {
+        const targetId = btn.getAttribute('data-target');
+        const step = parseFloat(btn.getAttribute('data-step'));
+        const input = document.getElementById(targetId);
+        const nextVal = Math.min(parseFloat(input.max), Math.max(parseFloat(input.min), parseFloat(input.value) + step));
+        input.value = nextVal;
+        calculateAllAndRender();
+    });
+});
+
+['weight', 'height', 'age', 'activity', 'macroProfile', 'snackToggle'].forEach(id => {
+    document.getElementById(id).addEventListener('input', scheduleRender);
+});
+
+document.getElementById('rotationMode').addEventListener('change', () => {
+    state.rotationMode = document.getElementById('rotationMode').value;
+    regenerateWeekPlan();
+    calculateAllAndRender();
+});
+
+// Slider e preset per Surplus / Deficit calorico
+const deltaSlider = document.getElementById('deltaSlider');
+deltaSlider.addEventListener('input', () => {
+    state.deltaKcal = parseInt(deltaSlider.value, 10);
+    scheduleRender();
+});
+
+document.getElementById('deltaMinus').addEventListener('click', () => {
+    deltaSlider.value = Math.max(50, parseInt(deltaSlider.value, 10) - 25);
+    deltaSlider.dispatchEvent(new Event('input'));
+});
+
+document.getElementById('deltaPlus').addEventListener('click', () => {
+    deltaSlider.value = Math.min(1000, parseInt(deltaSlider.value, 10) + 25);
+    deltaSlider.dispatchEvent(new Event('input'));
+});
+
+document.getElementById('presetChips').addEventListener('click', (e) => {
+    const chip = e.target.closest('.chip');
+    if (!chip) return;
+    deltaSlider.value = chip.getAttribute('data-val');
+    deltaSlider.dispatchEvent(new Event('input'));
+});
+
+// Selettore base colazione e giorno di sgarro
+document.getElementById('breakfastTemplateSelect').addEventListener('change', (e) => {
+    state.breakfastIdx = parseInt(e.target.value, 10);
+    calculateAllAndRender();
+});
+
+document.getElementById('cheatDaySelect').addEventListener('change', (e) => {
+    state.cheatDay = parseInt(e.target.value, 10);
+    if (state.activeDay === state.cheatDay) {
+        state.activeDay = (state.cheatDay + 1) % 7;
+    }
+    calculateAllAndRender();
+});
+
+// Pulsante mostra tutti i 6 giorni
+document.getElementById('viewAllBtn').addEventListener('click', (e) => {
+    state.viewAllDays = !state.viewAllDays;
+    e.target.classList.toggle('active', state.viewAllDays);
+    e.target.textContent = state.viewAllDays ? "Mostra giorno singolo" : "Mostra tutti i 6 giorni";
+    calculateAllAndRender();
+});
+
+// Legumi: la rigenerazione punta ad almeno LEGUME_MIN_MEALS pasti a settimana (preferenza morbida)
+const LEGUME_KEYS = new Set(Object.keys(FOOD_DB).filter(k => FOOD_DB[k].legume));
+const LEGUME_MIN_MEALS = 4, LEGUME_MAX_MEALS = 6;
+const hasLegume = tpl => +[tpl.carbSource, tpl.protSource, ...[].concat(tpl.fixedBase || []).map(b => b.foodKey)].some(k => LEGUME_KEYS.has(k));
+
+// Rigenerazione combinatoria multi-obiettivo su pool espansi (18 pranzi, 16 cene, 6 spuntini)
+const PROTEIN_FAMILY = {
+    petto_pollo: 'pollame',
+    manzo_macinato: 'carne_rossa', steak_maiale: 'carne_rossa',
+    tonno_naturale: 'pesce', merluzzo: 'pesce', salmone_selvaggio: 'pesce',
+    mix_uova_albumi: 'uova'
+};
+
+function shuffled(n) {
+    const a = [...Array(n).keys()];
+    for (let i = n - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+}
+
+const sampleIdx = (n, k) => shuffled(n).slice(0, k);
+
+// onlyDays: se indicato, ripensa solo quei giorni e lascia invariati gli altri (auto-correzione)
+function regenerateWeekPlan(onlyDays = null) {
+    if (!state.targets.kcal) computeMacroTargets();
+    const allActive = [0, 1, 2, 3, 4, 5, 6].filter(d => d !== state.cheatDay);
+    const active = onlyDays ? [...onlyDays].sort(() => Math.random() - 0.5) : shuffled(7).filter(d => d !== state.cheatDay);
+    const { c, p, l, kcal } = state.targets;
+    const includeSnack = document.getElementById('snackToggle').value === "4";
+    const isCompact = document.getElementById('rotationMode').value === "compact";
+    const dev = (a, b) => Math.abs(a - b) / b;
+    const REPEAT_PENALTY = 0.14;
+    
+    // REGOLA FREEZER: Massimo un tipo di verdura surgelata a settimana
+    const FROZEN_VEGS = ['piselli', 'spinaci'];
+    const used = { lunch: {}, dinner: {}, snack: {}, protCount: {}, legumes: 0, frozenVegs: {} };
+    
+    // i giorni che non cambiano contano comunque per varietà, legumi, fonti proteiche e vegetali surgelati
+    const tally = pick => {
+        used.lunch[pick.lunch] = (used.lunch[pick.lunch] || 0) + 1;
+        used.dinner[pick.dinner] = (used.dinner[pick.dinner] || 0) + 1;
+        if (includeSnack) used.snack[pick.snack] = (used.snack[pick.snack] || 0) + 1;
+        const pL = LUNCH_POOL[pick.lunch].protSource, pD = DINNER_POOL[pick.dinner].protSource;
+        used.protCount[pL] = (used.protCount[pL] || 0) + 1;
+        used.protCount[pD] = (used.protCount[pD] || 0) + 1;
+        used.legumes += hasLegume(LUNCH_POOL[pick.lunch]) + hasLegume(DINNER_POOL[pick.dinner]) + (includeSnack ? hasLegume(SNACK_POOL[pick.snack]) : 0);
+        
+        const countFrozen = m => {
+            const keys = [m.carbSource, m.protSource, m.fatSource, ...(m.fixedBase ? [].concat(m.fixedBase).map(b=>b.foodKey) : [])];
+            keys.forEach(k => {
+                if (FROZEN_VEGS.includes(k)) used.frozenVegs[k] = (used.frozenVegs[k] || 0) + 1;
+            });
+        };
+        countFrozen(LUNCH_POOL[pick.lunch]);
+        countFrozen(DINNER_POOL[pick.dinner]);
+        if (includeSnack) countFrozen(SNACK_POOL[pick.snack]);
+    };
+    allActive.filter(d => !active.includes(d)).forEach(d => tally(state.weekPlan[d]));
+
+    active.forEach(d => {
+        const snacks = includeSnack ? [...SNACK_POOL.keys()] : [state.weekPlan[d].snack];
+        let best = null;
+        for (const L of sampleIdx(LUNCH_POOL.length, onlyDays ? LUNCH_POOL.length : 10)) {
+            for (const D of sampleIdx(DINNER_POOL.length, onlyDays ? DINNER_POOL.length : 10)) {
+                const pL = LUNCH_POOL[L].protSource;
+                const pD = DINNER_POOL[D].protSource;
+                const sameFamily = PROTEIN_FAMILY[pL] === PROTEIN_FAMILY[pD];
+
+                // Bonus o penalità in base alla strategia scelta (varietà freezer vs compatta)
+                let packFactor = 0;
+                if (isCompact) {
+                    if (FOOD_DB[pL].freezable && used.protCount[pL] === 1) packFactor -= 0.05;
+                    if (FOOD_DB[pD].freezable && used.protCount[pD] === 1) packFactor -= 0.05;
+                    if ((used.protCount[pL] || 0) >= 2) packFactor += 0.08;
+                    if ((used.protCount[pD] || 0) >= 2) packFactor += 0.08;
+                } else {
+                    packFactor += 0.03 * ((used.protCount[pL] || 0) + (used.protCount[pD] || 0));
+                }
+
+                for (const S of snacks) {
+                    state.weekPlan[d] = { lunch: L, dinner: D, snack: S };
+                    const t = buildSingleDayPlan(d, c, p, l, includeSnack).dayTotals;
+                    let score = dev(t.kcal, kcal) + 0.5 * Math.max(dev(t.c, c), dev(t.p, p), dev(t.l, l))
+                        + REPEAT_PENALTY * ((used.lunch[L] || 0) + (used.dinner[D] || 0) + (includeSnack ? (used.snack[S] || 0) : 0))
+                        + packFactor
+                        + Math.random() * 0.035;
+                        
+                    score += 0.10 * legumeBatchPenalty(getLegumeAlloc(c, p, l, includeSnack));
+                    if (sameFamily) score += 0.18;
+                    if (dev(t.kcal, kcal) > 0.05 || Math.max(dev(t.c, c), dev(t.p, p), dev(t.l, l)) > 0.10) score += 0.4;
+                    const nLeg = hasLegume(LUNCH_POOL[L]) + hasLegume(DINNER_POOL[D]) + (includeSnack ? hasLegume(SNACK_POOL[S]) : 0);
+                    if (nLeg && used.legumes < LEGUME_MIN_MEALS) score -= 0.12;   // finché non arrivo a 4, i legumi sono premiati
+                    if (nLeg >= 2) score += 0.08;                                  // meglio distribuirli su più giorni
+                    if (used.legumes >= LEGUME_MAX_MEALS) score += 0.1 * nLeg;     // ...senza esagerare
+                    
+                    // Vincolo logico: Evitare un secondo tipo di verdura surgelata nella settimana
+                    const sFrozen = new Set();
+                    const checkF = m => {
+                        const keys = [m.carbSource, m.protSource, m.fatSource, ...(m.fixedBase ? [].concat(m.fixedBase).map(b=>b.foodKey) : [])];
+                        keys.forEach(k => { if (FROZEN_VEGS.includes(k)) sFrozen.add(k); });
+                    };
+                    checkF(LUNCH_POOL[L]);
+                    checkF(DINNER_POOL[D]);
+                    if (includeSnack) checkF(SNACK_POOL[S]);
+                    
+                    let uniqueFrozens = 0;
+                    const tempFrozens = { ...used.frozenVegs };
+                    sFrozen.forEach(k => tempFrozens[k] = (tempFrozens[k] || 0) + 1);
+                    uniqueFrozens = Object.keys(tempFrozens).filter(k => tempFrozens[k] > 0).length;
+                    
+                    if (uniqueFrozens > 1) {
+                        score += 10.0; // Penalità enorme: scarta il pasto se porta a 2+ vegetali surgelati diversi
+                    }
+
+                    if (!best || score < best.score) best = { L, D, S, score };
+                }
+            }
+        }
+        state.weekPlan[d] = { lunch: best.L, dinner: best.D, snack: best.S };
+        tally(state.weekPlan[d]);
+    });
+
+    // Con la settimana completa, se restano lattine usate in un solo pasto, ripensa ogni giorno tenendone conto
+    if (!onlyDays && legumeBatchPenalty(getLegumeAlloc(c, p, l, includeSnack)) > 0) {
+        shuffled(7).filter(d => d !== state.cheatDay).forEach(d => regenerateWeekPlan([d]));
+    }
+}
+
+// Auto-correzione: se cambiano i target e qualche giorno esce dalla soglia, ripensa solo quei giorni
+function offTargetDays() {
+    const { c, p, l } = state.targets;
+    const includeSnack = document.getElementById('snackToggle').value === "4";
+    const tKcal = c * 4 + p * 4 + l * 9;
+    const dev = (a, b) => Math.abs(a - b) / b;
+    return [0, 1, 2, 3, 4, 5, 6].filter(d => d !== state.cheatDay).filter(d => {
+        const t = buildSingleDayPlan(d, c, p, l, includeSnack).dayTotals;
+        return dev(t.kcal, tKcal) > 0.05 || dev(t.c, c) > 0.10 || dev(t.p, p) > 0.10 || dev(t.l, l) > 0.10;
+    });
+}
+
+function scheduleAutoRepair() {
+    clearTimeout(scheduleAutoRepair.timer);
+    scheduleAutoRepair.timer = setTimeout(() => {
+        let bad = offTargetDays();
+        if (!bad.length) return;
+        const n = bad.length;
+        for (let i = 0; i < 2 && bad.length; i++) { regenerateWeekPlan(bad); bad = offTargetDays(); }
+        calculateAllAndRender();
+        showToast(`Piatti aggiornati ai nuovi target (${n} ${n === 1 ? 'giorno' : 'giorni'})`);
+    }, 450);
+}
+
+document.getElementById('regenWeekBtn').addEventListener('click', () => {
+    regenerateWeekPlan();
+    calculateAllAndRender();
+    showToast("Nuova combinazione settimanale generata");
+});
+
+// Scorrimento rapido alla sezione Lista della Spesa Lidl FR
+document.getElementById('scrollToLidlBtn').addEventListener('click', () => {
+    document.getElementById('lidlShoppingSection').scrollIntoView({ behavior: 'smooth' });
+});
+
+// Copia Lista della Spesa Lidl France negli appunti
+document.getElementById('copyLidlListBtn').addEventListener('click', () => {
+    const gC = state.targets.c;
+    const gP = state.targets.p;
+    const gL = state.targets.l;
+    const includeSnack = document.getElementById('snackToggle').value === "4";
+    const text = buildLidlShoppingText(gC, gP, gL, includeSnack);
+
+    copyText(text, "Lista della spesa Lidl (FR) copiata negli appunti");
+});
+
+// Scarica Lista della Spesa in formato .txt
+document.getElementById('downloadLidlTxtBtn').addEventListener('click', () => {
+    const gC = state.targets.c;
+    const gP = state.targets.p;
+    const gL = state.targets.l;
+    const includeSnack = document.getElementById('snackToggle').value === "4";
+    const text = buildLidlShoppingText(gC, gP, gL, includeSnack);
+
+    const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = "liste_courses_lidl_france.txt";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+});
+
+// Azzera le spunte del carrello
+document.getElementById('resetChecklistBtn').addEventListener('click', () => {
+    state.checkedGroceries = {};
+    calculateAllAndRender();
+    showToast("Spunte carrello azzerate");
+});
+
+// Copia dell'intero piano settimanale negli appunti
+document.getElementById('copyWeekBtn').addEventListener('click', () => {
+    const gC = state.targets.c;
+    const gP = state.targets.p;
+    const gL = state.targets.l;
+    const kcal = state.targets.kcal.toLocaleString('it-IT');
+    const includeSnack = document.getElementById('snackToggle').value === "4";
+
+    let text = `PIANO NUTRIZIONALE SETTIMANALE (6 GIORNI + 1 LIBERO)\n`;
+    text += `Target giornaliero: ${kcal} kcal | C: ${gC}g | P: ${gP}g | L: ${gL}g\n`;
+    text += `========================================\n\n`;
+
+    for (let d = 0; d < 7; d++) {
+        if (d === state.cheatDay) {
+            text += `🍕 ${DAYS_IT[d].toUpperCase()}: GIORNO LIBERO / SGARRO\n\n`;
+            continue;
+        }
+        const plan = buildSingleDayPlan(d, gC, gP, gL, includeSnack);
+        text += `📅 ${DAYS_IT[d].toUpperCase()} (${Math.round(plan.dayTotals.kcal)} kcal)\n`;
+        plan.meals.forEach(m => {
+            text += `• ${m.name}: ${m.title}\n`;
+            m.items.forEach(it => {
+                text += `   - ${it.name} [${it.frName}]: ${formatItemGramLabel(it.foodKey, it.grams)}\n`;
+            });
+            if (m.recipe) {
+                text += `   ↳ Preparazione: ${formatRecipeSteps(m.recipe, m.items)}\n`;
+            }
+        });
+        text += `\n`;
+    }
+
+    text += buildLidlShoppingText(gC, gP, gL, includeSnack);
+
+    copyText(text, "Piano settimanale + Ricette + Lista spesa Lidl copiati");
+});
+
+// Persistenza: localStorage + link condivisibile (stato nell'hash dell'URL)
+const STORAGE_KEY = 'planner_lidl_v2';
+const SNAPSHOT_V = 7;
+const INPUT_IDS = ['weight', 'height', 'age', 'activity', 'macroProfile', 'snackToggle', 'rotationMode'];
+
+const utf8ToB64 = s => btoa(String.fromCharCode(...new TextEncoder().encode(s)));
+const b64ToUtf8 = b => new TextDecoder().decode(Uint8Array.from(atob(b), c => c.charCodeAt(0)));
+
+function collectSnapshot() {
+    return {
+        v: SNAPSHOT_V,
+        state: {
+            sex: state.sex, goal: state.goal, deltaKcal: state.deltaKcal, activeDay: state.activeDay,
+            viewAllDays: state.viewAllDays, cheatDay: state.cheatDay, breakfastIdx: state.breakfastIdx,
+            rotationMode: state.rotationMode,
+            checkedGroceries: Object.fromEntries(Object.entries(state.checkedGroceries).filter(([, v]) => v)),
+            weekPlan: state.weekPlan
+        },
+        inputs: Object.fromEntries(INPUT_IDS.map(id => [id, document.getElementById(id).value]))
+    };
+}
+
+function saveState() {
+    clearTimeout(saveState.timer);
+    saveState.timer = setTimeout(saveStateNow, 250);
+}
+window.addEventListener('pagehide', () => saveStateNow());
+
+function saveStateNow() {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(collectSnapshot())); } catch (e) { /* storage non disponibile */ }
+}
+
+function restoreSnapshot(snap) {
+    const s = snap && snap.state;
+    if (!s) return;
+    const inRange = (v, max) => Number.isInteger(v) && v >= 0 && v < max;
+    if (s.sex === 'M' || s.sex === 'F') state.sex = s.sex;
+    if (['deficit', 'maintenance', 'surplus'].includes(s.goal)) state.goal = s.goal;
+    if (Number.isFinite(s.deltaKcal)) state.deltaKcal = Math.min(1000, Math.max(50, s.deltaKcal));
+    if (inRange(s.cheatDay, 7)) state.cheatDay = s.cheatDay;
+    if (inRange(s.activeDay, 7)) state.activeDay = s.activeDay;
+    if (state.activeDay === state.cheatDay) state.activeDay = (state.cheatDay + 1) % 7;
+    state.viewAllDays = !!s.viewAllDays;
+    const compat = snap.v === SNAPSHOT_V; // salvataggi vecchi: gli indici dei pasti non corrispondono più
+    if (compat && inRange(s.breakfastIdx, BREAKFAST_OPTIONS.length)) state.breakfastIdx = s.breakfastIdx;
+    if (s.rotationMode === 'variety' || s.rotationMode === 'compact') state.rotationMode = s.rotationMode;
+    if (s.checkedGroceries && typeof s.checkedGroceries === 'object') state.checkedGroceries = s.checkedGroceries;
+    if (compat && Array.isArray(s.weekPlan) && s.weekPlan.length === 7) {
+        s.weekPlan.forEach((d, i) => {
+            if (!d) return;
+            if (inRange(d.lunch, LUNCH_POOL.length)) state.weekPlan[i].lunch = d.lunch;
+            if (inRange(d.dinner, DINNER_POOL.length)) state.weekPlan[i].dinner = d.dinner;
+            if (inRange(d.snack, SNACK_POOL.length)) state.weekPlan[i].snack = d.snack;
+        });
+    }
+    INPUT_IDS.forEach(id => {
+        const el = document.getElementById(id);
+        const v = snap.inputs && snap.inputs[id];
+        if (v === undefined) return;
+        if (el.tagName === 'SELECT' && !Array.from(el.options).some(o => o.value === String(v))) return;
+        el.value = v;
+    });
+}
+
+function applyStateToUI() {
+    document.querySelectorAll('[data-sex]').forEach(b => b.classList.toggle('active', b.getAttribute('data-sex') === state.sex));
+    document.querySelectorAll('[data-goal]').forEach(b => b.classList.toggle('active', b.getAttribute('data-goal') === state.goal));
+    document.getElementById('deltaSlider').value = state.deltaKcal;
+    document.getElementById('breakfastTemplateSelect').value = String(state.breakfastIdx);
+    document.getElementById('cheatDaySelect').value = String(state.cheatDay);
+    document.getElementById('rotationMode').value = state.rotationMode;
+}
+
+function loadInitialState() {
+    let snap = null;
+    try {
+        const m = location.hash.match(/^#s=(.+)$/);
+        if (m) {
+            snap = JSON.parse(b64ToUtf8(decodeURIComponent(m[1])));
+            try { history.replaceState(null, '', location.pathname + location.search); } catch (e) { /* pagina incorporata: non posso pulire l'URL */ }
+        }
+    } catch (e) { snap = null; }
+    if (!snap) {
+        try { snap = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null'); } catch (e) { snap = null; }
+    }
+    if (snap) {
+        restoreSnapshot(snap);
+        applyStateToUI();
+        if (snap.v !== SNAPSHOT_V) regenerateWeekPlan();
+    } else {
+        applyStateToUI();
+        regenerateWeekPlan();
+    }
+}
+
+document.getElementById('shareLinkBtn').addEventListener('click', () => {
+    const url = location.href.split('#')[0] + '#s=' + encodeURIComponent(utf8ToB64(JSON.stringify(collectSnapshot())));
+    copyText(url, "Link con la tua configurazione copiato");
+});
+
+async function copyText(text, okMsg) {
+    try {
+        await navigator.clipboard.writeText(text);
+    } catch (e) {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.cssText = 'position:fixed;opacity:0';
+        document.body.appendChild(ta);
+        ta.select();
+        const ok = document.execCommand('copy');
+        document.body.removeChild(ta);
+        if (!ok) { showToast('Copia non riuscita'); return; }
+    }
+    showToast(okMsg);
+}
+
+function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(showToast.timer);
+    showToast.timer = setTimeout(() => t.classList.remove('show'), 2400);
+}
+
+function initA11y() {
+    document.querySelectorAll('.control-block').forEach((block, i) => {
+        const label = block.querySelector('.control-label');
+        if (!label) return;
+        label.id = label.id || 'ctl-label-' + i;
+        block.querySelectorAll('input[type="range"], select').forEach(el => el.setAttribute('aria-labelledby', label.id));
+        block.querySelectorAll('.btn-step').forEach((b, j) => {
+            b.id = b.id || `ctl-step-${i}-${j}`;
+            b.setAttribute('aria-label', b.textContent.trim() === '+' ? 'Aumenta' : 'Diminuisci');
+            b.setAttribute('aria-labelledby', `${b.id} ${label.id}`);
+        });
+    });
+}
+
+function syncPressed() {
+    document.querySelectorAll('.seg-btn[data-sex], .seg-btn[data-goal], #viewAllBtn')
+        .forEach(b => b.setAttribute('aria-pressed', String(b.classList.contains('active'))));
+}
+
+window.addEventListener('DOMContentLoaded', () => { initA11y(); loadInitialState(); calculateAllAndRender(); });
+</script>
+</body>
+</html>
